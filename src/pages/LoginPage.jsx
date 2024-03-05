@@ -17,7 +17,6 @@ function LoginPage() {
     <GeneralLayout>
       <div className='h-[100vh] w-full relative bg-[url("https://cms.greenwich.edu.vn/pluginfile.php/1/theme_adaptable/p1/1698976651/socialbg.png")] bg-no-repeat bg-cover'>
         <div className='h-[100vh] w-full bg-black opacity-40 absolute top-0 bottom-0'>
-
         </div>
         <div className=' absolute top-52 flex justify-center w-full'>
           <div className='w-fit  text-3xl text-white'>
