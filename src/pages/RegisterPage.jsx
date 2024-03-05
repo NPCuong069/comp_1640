@@ -91,7 +91,7 @@ function RegisterPage() {
                             </div>
                             <div className='mt-4 flex justify-center'>
                             
-                                <Link to={'/register'} className=' p-2 bg-white font-bold rounded-xl px-8' >Register</Link>
+                                <button type='submit' className=' p-2 bg-white font-bold rounded-xl px-8' >Register</button>
                             </div>
                         </form></div>
                 </div>
