@@ -1,12 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { AppRoutes } from './routes';
+import ThemeProvider from './theme'; // For admin theme
+import UnifiedRouter from './routes/unifiedRouter';
+
+// Optional: Use 'src/global.css' here if it's common to both user and admin
+import './global.css';
 
 function App() {
   return (
-    <Router>
-      <AppRoutes />
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <UnifiedRouter />
+      </Router>
+      </ThemeProvider>
   );
 }
 
