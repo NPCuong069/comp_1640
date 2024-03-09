@@ -9,7 +9,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
+import { Tabs, Tab, Box } from '@mui/material';
 import { users } from '../../../_mock/user';
 
 import Iconify from '../../../components/iconify';
@@ -25,6 +25,11 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 // ----------------------------------------------------------------------
 
 export default function UserPage() {
+  const [activeTab, setActiveTab] = useState(0);
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -93,9 +98,18 @@ export default function UserPage() {
   });
 
   const notFound = !dataFiltered.length && !!filterName;
-
+  const filteredUsers = applyFilter({
+    inputData: users,
+    comparator: getComparator(order, orderBy),
+    filterName,
+  }).filter((user) => {
+    if (activeTab === 0) return user.status === 'pending';
+    if (activeTab === 1) return user.status === 'activated';
+    return true;
+  });
   return (
     <Container>
+
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Users</Typography>
 
@@ -103,7 +117,10 @@ export default function UserPage() {
           New User
         </Button>
       </Stack>
-
+      <Tabs value={activeTab} onChange={handleTabChange} aria-label="user status tabs">
+        <Tab label="Pending" />
+        <Tab label="Activated" />
+      </Tabs>
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
@@ -123,25 +140,25 @@ export default function UserPage() {
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
+                  { id: 'faculty', label: 'Faculty' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'role', label: 'Role'},
                   { id: 'status', label: 'Status' },
                   { id: '' },
                 ]}
               />
               <TableBody>
-                {dataFiltered
+                {filteredUsers
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
                       name={row.name}
-                      role={row.role}
+                      email={row.userMail}
                       status={row.status}
-                      company={row.company}
+                      faculty={row.company}
                       avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
+                      role={row.role}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />

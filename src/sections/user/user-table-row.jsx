@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-
+import { Select } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
@@ -19,14 +19,17 @@ import Iconify from '../../components/iconify';
 export default function UserTableRow({
   selected,
   name,
-  avatarUrl,
-  company,
+  faculty,
+  email,
   role,
-  isVerified,
   status,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
+  const [userRole, setUserRole] = useState(role);
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -36,6 +39,17 @@ export default function UserTableRow({
     setOpen(null);
   };
 
+  const handleRoleChange = (event) => {
+    const newRole = event.target.value;
+    const isConfirmed = window.confirm(`Are you sure you want to change the user's role to ${newRole}?`);
+
+    if (isConfirmed) {
+      setUserRole(newRole);
+      // Here, update the role in your backend
+      // updateUserRole(userId, newRole);
+      // Make sure you handle the promise or callback from updateUserRole to catch errors or confirm success
+    }
+  };
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -45,18 +59,28 @@ export default function UserTableRow({
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
+        <TableCell>{faculty}</TableCell>
 
-        <TableCell>{role}</TableCell>
+        <TableCell>{email}</TableCell>
 
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
+        <TableCell>   <Select
+          value={userRole}
+          onChange={handleRoleChange}
+          size="small"
+          sx={{ minWidth: 120 }}
+        >
+          <MenuItem value="Student">Student</MenuItem>
+          <MenuItem value="Guest">Guest</MenuItem>
+          <MenuItem value="Coordination Manager">Marketing Manager</MenuItem>
+          <MenuItem value="Marketing Manager">Marketing Manager</MenuItem>
+          {/* Add other roles as needed */}
+        </Select></TableCell>
 
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
