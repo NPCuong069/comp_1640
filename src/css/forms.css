@@ -1,0 +1,51 @@
+.errorMessage {
+    font-size: 0.9rem;
+    color: red;
+    font-weight: bold;
+}
+
+.registerLink {
+    text-decoration: underline;
+    color: #F59E0B;
+    /* Example color */
+    font-weight: bold;
+    font-size: 0.875rem;
+    /* Smaller font size */
+}
+.loginLink {
+    text-decoration: underline;
+    color: #524FCB;
+    /* Example color */
+    font-weight: bold;
+    font-size: 0.875rem;
+    /* Smaller font size */
+}
+.registerText {
+    font-size: 0.875rem;
+    margin-bottom: 10px;
+    /* Ensures consistency in font size */
+}
+.blurBox {
+    backdrop-filter: blur(10px); /* Adjust the pixel value to control the amount of blur */
+    border-radius: 15px; /* Optional: for rounded corners */
+    padding: 20px;
+    border: 2px solid white; 
+    /* Other styling as necessary (padding, margin, etc.) */
+}
+.transparentInput {
+    background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.75); /* Slightly more opaque border */
+    color: white; /* Text color */
+    backdrop-filter: blur(5px); /* Adjust blur as needed */
+    -webkit-backdrop-filter: blur(5px); /* For Safari */
+    /* Additional styling as needed */
+}
+.transparentInput::placeholder {
+    color: white; /* Placeholder text color; adjust as needed */
+    opacity: 1; /* Ensure the color is fully opaque */
+}
+
+.loginButton {
+    border-radius: 90px;
+    /* Other styling as necessary (padding, margin, etc.) */
+}

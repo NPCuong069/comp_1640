@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Select } from '@mui/material';
+import { Button, Select } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
@@ -14,7 +14,6 @@ import IconButton from '@mui/material/IconButton';
 import Label from '../../components/label';
 import Iconify from '../../components/iconify';
 
-// ----------------------------------------------------------------------
 
 export default function UserTableRow({
   selected,
@@ -38,16 +37,15 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
-
+  const handleActivateClick = () => {
+    onActivateUser(user.id); // Assuming user object has an 'id' field
+  };
   const handleRoleChange = (event) => {
     const newRole = event.target.value;
     const isConfirmed = window.confirm(`Are you sure you want to change the user's role to ${newRole}?`);
 
     if (isConfirmed) {
       setUserRole(newRole);
-      // Here, update the role in your backend
-      // updateUserRole(userId, newRole);
-      // Make sure you handle the promise or callback from updateUserRole to catch errors or confirm success
     }
   };
   return (
@@ -84,8 +82,13 @@ export default function UserTableRow({
 
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+          {status === 'pending' && (
+            <Button  color="primary" variant="contained" size="small" style={{ marginLeft: 30 }}>
+              Activate
+            </Button>
+          )}
         </TableCell>
-
+  
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />

@@ -22,7 +22,7 @@ import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
-// ----------------------------------------------------------------------
+
 
 export default function UserPage() {
   const [activeTab, setActiveTab] = useState(0);

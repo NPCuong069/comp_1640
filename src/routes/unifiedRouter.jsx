@@ -1,15 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-// Admin imports
 import DashboardLayout from '../layouts/dashboard';
-
-// User imports
-import LoginPage from '../pages/LoginPage'; // Ensure paths are correct
+import LoginPage from '../pages/LoginPage'; 
 import RegisterPage from '../pages/RegisterPage';
-// Other imports...
-
-// Lazy imports for admin pages
 const IndexPage = lazy(() => import('../pages/admin/app'));
 const BlogPage = lazy(() => import('../pages/admin/blog'));
 const UserPage = lazy(() => import('../pages/admin/user'));
