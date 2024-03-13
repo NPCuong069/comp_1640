@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import GeneralLayout from '../components/general/GeneralLayout';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import '../css/forms.css';
 function RegisterPage() {
     const [errors, setErrors] = useState({});
@@ -19,12 +20,33 @@ function RegisterPage() {
             [name]: value,
         }));
     };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log('User Info:', userInfo);
-            // Proceed with form submission or API call
+            try {
+                // Ensure to match the backend expectation (considering your backend casing for properties)
+                const formattedData = {
+                    UserName: userInfo.username,
+                    Email: userInfo.email,
+                    Password: userInfo.password,
+                    FirstName: userInfo.firstName,
+                    LastName: userInfo.lastName,
+                };
+
+                // Update the URL to the correct https endpoint
+                const response = await axios.post('https://localhost:7002/api/Auth/register', formattedData);
+
+                if (response.data) {
+                    console.log('Registration successful:', response.data);
+                    navigate('/login'); // Assuming '/login' is your login page route
+                }
+            } catch (error) {
+                console.error('Registration failed:', error.response ? error.response.data : error.message);
+                if (error.response && error.response.data) {
+                    // Adjust according to the error format returned by your API
+                    setErrors({ apiError: error.response.data });
+                }
+            }
         } else {
             console.error('Validation failed');
         }
@@ -160,45 +182,12 @@ function RegisterPage() {
                                 <div className='mt-4 flex justify-center text-white'>
                                     <p className="registerText">Already have an account? <Link to={'/'} className="registerLink">Log in</Link></p>
                                 </div>
-                            </form></div></div>
+                            </form>
+                            {errors.apiError && <p className="errorMessage">⚠️{errors.apiError}</p>}
+                        </div></div>
                 </div>
             </div>
-            {/* <div>
-                <h1>Register</h1>
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="username">Username:</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={userInfo.username}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="email">Email:</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={userInfo.email}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={userInfo.password}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <button type="submit">Register</button>
-                </form>
-            </div> */}
+
         </GeneralLayout>
     );
 }

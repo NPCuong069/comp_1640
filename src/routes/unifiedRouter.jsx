@@ -4,6 +4,8 @@ import { Outlet } from 'react-router-dom';
 import DashboardLayout from '../layouts/dashboard';
 import LoginPage from '../pages/LoginPage'; 
 import RegisterPage from '../pages/RegisterPage';
+import StudentIndex  from '../pages/student/IndexPage';
+import StudentArticleDetails from '../pages/student/ArticleDetailsPage';
 const IndexPage = lazy(() => import('../pages/admin/app'));
 const BlogPage = lazy(() => import('../pages/admin/blog'));
 const UserPage = lazy(() => import('../pages/admin/user'));
@@ -14,6 +16,8 @@ function UnifiedRouter() {
   const commonRoutes = [
     { path: '/', element: <LoginPage /> },
     { path: '/register', element: <RegisterPage /> },
+    { path: '/student/index', element: <StudentIndex /> },
+    { path: '/student/articleDetails', element: <StudentArticleDetails /> },
     // Possibly more shared routes...
   ];
 
