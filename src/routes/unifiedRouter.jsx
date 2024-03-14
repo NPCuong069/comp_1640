@@ -6,6 +6,8 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import StudentIndex  from '../pages/student/IndexPage';
 import StudentArticleDetails from '../pages/student/ArticleDetailsPage';
+import AddNewPage from '../pages/student/AddNewPage';
+
 const IndexPage = lazy(() => import('../pages/admin/app'));
 const BlogPage = lazy(() => import('../pages/admin/blog'));
 const UserPage = lazy(() => import('../pages/admin/user'));
@@ -18,6 +20,7 @@ function UnifiedRouter() {
     { path: '/register', element: <RegisterPage /> },
     { path: '/student/index', element: <StudentIndex /> },
     { path: '/student/articleDetails', element: <StudentArticleDetails /> },
+    { path: '/student/addNew', element: <AddNewPage /> },
     // Possibly more shared routes...
   ];
 
