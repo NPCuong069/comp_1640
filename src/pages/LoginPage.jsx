@@ -1,23 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect,useRef  } from 'react';
 import GeneralLayout from '../components/general/GeneralLayout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation  } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import '../css/forms.css';
 function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      console.log('Logging in with:', username, password);
-      // Redirect to dashboard or another page on successful login
-    } else {
-      console.error('Validation failed');
-    }
-  };
+  const navigate = useNavigate();
+  const location = useLocation(); 
 
   const validateForm = () => {
     let formIsValid = true;
@@ -38,13 +31,42 @@ function LoginPage() {
     setErrors(errors);
     return formIsValid;
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    if (validateForm()) {
+      try {
+        const response = await axios.post('https://localhost:7002/api/Auth/login', {
+          userName: username,
+          password: password
+        });
+
+        // Assuming the token is returned directly in the response body
+        console.log('Login successful:', response.data);
+        // Here you would typically store the token in localStorage/sessionStorage
+        localStorage.setItem('token', response.data);
+
+        navigate('/admin/user');// Redirect to a dashboard or home page
+      } catch (error) {
+        console.error('Login failed:', error.response ? error.response.data : error.message);
+        // Handle 401 Unauthorized response
+        if (error.response && error.response.status === 401) {
+          setErrors({ apiError: 'Login failed. Please check your username and password.' });
+        } else {
+          // Handle other errors
+          setErrors({ apiError: 'An unexpected error occurred. Please try again.' });
+        }
+      }
+    } else {
+      console.error('Validation failed');
+    }
+  }
   return (
     <GeneralLayout>
       <div className='h-[100vh] w-full relative bg-[url("https://cms.greenwich.edu.vn/pluginfile.php/1/theme_adaptable/p1/1698976651/socialbg.png")] bg-no-repeat bg-cover'>
         <div className='h-[100vh] w-full bg-black opacity-40 absolute top-0 bottom-0'>
         </div>
-          <div className=' absolute top-52 flex justify-center w-full'>
+        <div className=' absolute top-52 flex justify-center w-full'>
           <div className="blurBox">
             <div className='w-fit  text-3xl text-white'>
               <h2 className='flex  justify-center mt-4 font-bold'>Login</h2>
@@ -74,10 +96,12 @@ function LoginPage() {
                 <div className='mt-8 w-full flex justify-center'>
                   <button type="submit" className=' p-2 bg-white font-bold loginButton w-full'>Login</button>
                 </div>
-                <div className='mt-4 flex justify-center text-white'> 
+                <div className='mt-4 flex justify-center text-white'>
                   <p className="registerText">Don't have an account yet? <Link to={'/register'} className="registerLink">Click here</Link></p>
                 </div>
-              </form></div>
+              </form>
+              {errors.apiError && <p className="errorMessage">⚠️ {errors.apiError}</p>}
+            </div>
           </div>
         </div>
       </div>

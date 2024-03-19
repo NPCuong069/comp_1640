@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import GeneralLayout from '../components/general/GeneralLayout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate  } from 'react-router-dom';
 import axios from 'axios';
 import '../css/forms.css';
 function RegisterPage() {
@@ -12,7 +12,7 @@ function RegisterPage() {
         email: '',
         password: '',
     });
-
+    const navigate = useNavigate();
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserInfo((prevUserInfo) => ({
@@ -38,7 +38,8 @@ function RegisterPage() {
 
                 if (response.data) {
                     console.log('Registration successful:', response.data);
-                    navigate('/login'); // Assuming '/login' is your login page route
+                    alert('Registration successful. Please login.');
+                    navigate('/');
                 }
             } catch (error) {
                 console.error('Registration failed:', error.response ? error.response.data : error.message);
@@ -154,7 +155,7 @@ function RegisterPage() {
                                 {errors.username && <p className="errorMessage">⚠️{errors.username}</p>}
                                 <div className='mt-4' >
                                     <input
-                                        type="text"
+                                        type="password"
                                         id="password"
                                         name='password'
                                         value={userInfo.password}
