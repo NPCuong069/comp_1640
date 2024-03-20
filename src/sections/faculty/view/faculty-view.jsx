@@ -9,7 +9,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Tabs, Tab, Box, Modal, TextField } from '@mui/material';
+import { Tabs, Tab, Box,Modal,TextField } from '@mui/material';
 
 
 import Iconify from '../../../components/iconify';
@@ -24,7 +24,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 
 
-export default function UserPage() {
+export default function Faculty() {
   const [activeTab, setActiveTab] = useState(0);
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -33,7 +33,7 @@ export default function UserPage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
-  const [users, setUsers] = useState([]);
+  const [faculties, setFaculties] = useState([]);
   const [selected, setSelected] = useState([]);
 
   const [orderBy, setOrderBy] = useState('name');
@@ -44,17 +44,17 @@ export default function UserPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newFacultyName, setNewFacultyName] = useState('');
 
-  // const handleSort = (event, id) => {
-  //   const isAsc = orderBy === id && order === 'asc';
-  //   if (id !== '') {
-  //     setOrder(isAsc ? 'desc' : 'asc');
-  //     setOrderBy(id);
-  //   }
-  // };
+  const handleSort = (event, id) => {
+    const isAsc = orderBy === id && order === 'asc';
+    if (id !== '') {
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(id);
+    }
+  };
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.name);
+      const newSelecteds = faculties.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -94,46 +94,29 @@ export default function UserPage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: users,
+    inputData: faculties,
     comparator: getComparator(order, orderBy),
     filterName,
   });
-  const fetchUsers = async () => {
+  const fetchFaculties = async () => {
     try {
-      const response = await fetch('https://localhost:7002/api/Users');
+      const response = await fetch('https://localhost:7002/api/Users/faculties');
       if (!response.ok) {
         throw new Error('Could not fetch users');
       }
       const data = await response.json();
-      setUsers(data); // Assuming setUsers is your state setter for user data
+      setFaculties(data); // Assuming setUsers is your state setter for user data
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
   useEffect(() => {
-    fetchUsers();
     fetchFaculties();
   }, []);
   const notFound = !dataFiltered.length && !!filterName;
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
-  const [faculties, setFaculties] = useState([]);
-
-
-  const fetchFaculties = async () => {
-    try {
-      const response = await fetch('https://localhost:7002/api/Users/faculties');
-      if (!response.ok) {
-        throw new Error('Could not fetch faculties');
-      }
-      const data = await response.json();
-      setFaculties(data);
-    } catch (error) {
-      console.error("Error fetching faculties:", error);
-    }
-  };
-
   const handleSubmitFaculty = async () => {
     if (!newFacultyName.trim()) {
       alert('Please enter a faculty name.');
@@ -154,6 +137,7 @@ export default function UserPage() {
         alert('Faculty added successfully.');
         setIsModalOpen(false);
         setNewFacultyName('');
+        window.location.reload();
       } else {
         alert('Failed to add faculty.');
       }
@@ -163,38 +147,17 @@ export default function UserPage() {
     }
   };
 
-  const filteredUsers = applyFilter({
-    inputData: users,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  }).filter((user) => {
-    if (activeTab === 0) return user.roleName === "Default";
-    if (activeTab === 1) return user.roleName !== "Default";
-    return true;
-  });
-  const headLabels = [
-    { id: 'name', label: 'Username' },
-    { id: 'fullName', label: 'Full name' },
-    activeTab === 1 ? { id: 'faculty', label: 'Faculty' } : null, // Conditionally include "Faculty"
-    { id: 'email', label: 'Email' },
-    { id: 'role', label: 'Role' },
-    { id: 'action', label: 'Action' },
-    { id: '', label: '' },
-  ].filter(label => label !== null);
   return (
     <Container>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Users</Typography>
+        <Typography variant="h4">Faculties</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
           New Faculty
         </Button>
       </Stack>
-      <Tabs value={activeTab} onChange={handleTabChange} aria-label="user status tabs">
-        <Tab label="Pending" />
-        <Tab label="Activated" />
-      </Tabs>
+
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
@@ -208,25 +171,23 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={users.length}
+                rowCount={faculties.length}
                 numSelected={selected.length}
-             
+                onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
-                headLabel={headLabels}
+                headLabel={[
+                  { id: 'name', label: 'Faculty name' },
+                  { id: 'action', label: 'Action' },
+                  { id: '' },
+                ]}
               />
               <TableBody>
-                {filteredUsers
+                {faculties
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.userName} // Change from row.id to row.userName
-                      username={row.userName}
-                      name={`${row.firstName} ${row.lastName}`} // Combine firstName and lastName
-                      email={row.email}
-                      faculties={faculties}
-                      faculty={row.facultyName} // Update according to your API response
-                      role={row.roleName} // This was already correct but ensure it matches your API
-                      status={row.roleName === "Default" ? 'pending' : 'activated'} // Determine status based on roleName
+                      key={row.facultyName} // Change from row.id to row.userName
+                      facultyName={row.facultyName}
                       selected={selected.indexOf(row.userName) !== -1} // Use userName for selection logic
                       handleClick={(event) => handleClick(event, row.userName)}
                     />
@@ -234,7 +195,7 @@ export default function UserPage() {
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, users.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, faculties.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -246,7 +207,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={users.length}
+          count={faculties.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
@@ -285,6 +246,5 @@ export default function UserPage() {
         </Box>
       </Modal>
     </Container>
-
   );
 }

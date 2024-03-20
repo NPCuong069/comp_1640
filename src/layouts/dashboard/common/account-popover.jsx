@@ -8,7 +8,7 @@ import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-
+import { useNavigate } from 'react-router-dom';
 import { account } from '../../../_mock/account';
 
 // ----------------------------------------------------------------------
@@ -40,7 +40,13 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    handleClose();
+    navigate('/'); // Use navigate to go to the login page
+  };
   return (
     <>
       <IconButton
@@ -85,27 +91,18 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            Admin
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
-          </Typography>
+
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={handleClose}>
-            {option.label}
-          </MenuItem>
-        ))}
 
         <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
 
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout
