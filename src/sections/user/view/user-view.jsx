@@ -105,7 +105,8 @@ export default function UserPage() {
         throw new Error('Could not fetch users');
       }
       const data = await response.json();
-      setUsers(data); // Assuming setUsers is your state setter for user data
+      const nonAdminUsers = data.filter(user => user.roleName !== "Admin");
+      setUsers(nonAdminUsers);// Assuming setUsers is your state setter for user data
     } catch (error) {
       console.error("Error fetching users:", error);
     }

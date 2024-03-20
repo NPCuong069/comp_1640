@@ -23,6 +23,7 @@
     position: absolute;
     left: 178px;
     top: 0;
+    align-items: center;
 }
 
 .header-content img {

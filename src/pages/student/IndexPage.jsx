@@ -6,11 +6,9 @@ import "./IndexPage.css";
 function StudentIndex() {
     return (
         <div class="page-container">
-            {/* -------------------------------------------HEADER------------------------------------------------------------ */}
-
             <div class="header">
                 <div class="header-content">
-                    <img src="" alt="Logo" />
+                    <img src="/assets/GreenwichLogo.png" alt="Logo" style={{ width: "210px", height: "auto", paddingTop:25 }}/>
                     <div class="header-item">Student001</div>
                     <div class="header-item">Guidelines</div>
                     <div class="header-item">New articles</div>
@@ -21,9 +19,7 @@ function StudentIndex() {
                 <div class="menu-item">Account information</div>
                 <div class="menu-item">Log out</div>
             </div>
-            {/* ------------------------------------------END-HEADER------------------------------------------------------ */}
 
-            {/* ------------------------------------------------------------------------------------------------------- */}
             <div class="article-title">Your articles</div>
             <div class="sorting-container">
                 <div class="sorting-label">Sort by</div>
