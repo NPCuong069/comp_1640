@@ -34,13 +34,12 @@ function decodeJWT(token) {
 const token = localStorage.getItem('token');
 if (token) {
   const decodedPayload = decodeJWT(token);
-  // Use the namespaced key to access the role
   const roleUri = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
   const userRole = decodedPayload[roleUri];
-  console.log(userRole); // Should log "Admin" based on your token
+  console.log(userRole); 
 }
+
 function ProtectedAdminRoute({ children }) {
-  // Directly calculate isAdmin from the token without useState or useEffect
   const calculateIsAdmin = () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -54,7 +53,6 @@ function ProtectedAdminRoute({ children }) {
 
   const isAdmin = calculateIsAdmin();
 
-  // Directly return children or Navigate based on isAdmin
   return isAdmin ? children : <Navigate to="/" replace />;
 }
 function UnifiedRouter() {
@@ -64,8 +62,7 @@ function UnifiedRouter() {
     { path: '/student/index', element: <StudentIndex /> },
     { path: '/student/articleDetails', element: <StudentArticleDetails /> },
     { path: '/student/addNew', element: <AddNewPage /> },
-    
-    // Possibly more shared routes...
+
   ];
 
   const adminRoutes = [

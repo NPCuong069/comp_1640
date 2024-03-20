@@ -106,7 +106,7 @@ export default function UserPage() {
       }
       const data = await response.json();
       const nonAdminUsers = data.filter(user => user.roleName !== "Admin");
-      setUsers(nonAdminUsers);// Assuming setUsers is your state setter for user data
+      setUsers(nonAdminUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -176,7 +176,7 @@ export default function UserPage() {
   const headLabels = [
     { id: 'name', label: 'Username' },
     { id: 'fullName', label: 'Full name' },
-    activeTab === 1 ? { id: 'faculty', label: 'Faculty' } : null, // Conditionally include "Faculty"
+    activeTab === 1 ? { id: 'faculty', label: 'Faculty' } : null, 
     { id: 'email', label: 'Email' },
     { id: 'role', label: 'Role' },
     { id: 'action', label: 'Action' },
@@ -220,15 +220,15 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.userName} // Change from row.id to row.userName
+                      key={row.userName} 
                       username={row.userName}
-                      name={`${row.firstName} ${row.lastName}`} // Combine firstName and lastName
+                      name={`${row.firstName} ${row.lastName}`} 
                       email={row.email}
                       faculties={faculties}
-                      faculty={row.facultyName} // Update according to your API response
-                      role={row.roleName} // This was already correct but ensure it matches your API
-                      status={row.roleName === "Default" ? 'pending' : 'activated'} // Determine status based on roleName
-                      selected={selected.indexOf(row.userName) !== -1} // Use userName for selection logic
+                      faculty={row.facultyName}
+                      role={row.roleName} 
+                      status={row.roleName === "Default" ? 'pending' : 'activated'} 
+                      selected={selected.indexOf(row.userName) !== -1} 
                       handleClick={(event) => handleClick(event, row.userName)}
                     />
                   ))}
@@ -286,6 +286,5 @@ export default function UserPage() {
         </Box>
       </Modal>
     </Container>
-
   );
 }

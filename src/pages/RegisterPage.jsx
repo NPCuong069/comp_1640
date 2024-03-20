@@ -24,7 +24,6 @@ function RegisterPage() {
         e.preventDefault();
         if (validateForm()) {
             try {
-                // Ensure to match the backend expectation (considering your backend casing for properties)
                 const formattedData = {
                     UserName: userInfo.username,
                     Email: userInfo.email,
@@ -33,7 +32,6 @@ function RegisterPage() {
                     LastName: userInfo.lastName,
                 };
 
-                // Update the URL to the correct https endpoint
                 const response = await axios.post('https://localhost:7002/api/Auth/register', formattedData);
 
                 if (response.data) {
@@ -44,7 +42,6 @@ function RegisterPage() {
             } catch (error) {
                 console.error('Registration failed:', error.response ? error.response.data : error.message);
                 if (error.response && error.response.data) {
-                    // Adjust according to the error format returned by your API
                     setErrors({ apiError: error.response.data });
                 }
             }
@@ -55,8 +52,6 @@ function RegisterPage() {
     const validateForm = () => {
         let errors = {};
         let formIsValid = true;
-
-        // Regular expression for validating names (allowing only alphabetical characters)
         const nameRegex = /^[A-Za-z]+$/;
 
         // First name validation

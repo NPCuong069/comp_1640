@@ -41,19 +41,14 @@ function LoginPage() {
           password: password
         });
 
-        // Assuming the token is returned directly in the response body
         console.log('Login successful:', response.data);
-        // Here you would typically store the token in localStorage/sessionStorage
         localStorage.setItem('token', response.data);
-
-        navigate('/admin/user');// Redirect to a dashboard or home page
+        navigate('/admin/user');
       } catch (error) {
         console.error('Login failed:', error.response ? error.response.data : error.message);
-        // Handle 401 Unauthorized response
         if (error.response && error.response.status === 401) {
           setErrors({ apiError: 'Login failed. Please check your username and password.' });
         } else {
-          // Handle other errors
           setErrors({ apiError: 'An unexpected error occurred. Please try again.' });
         }
       }
