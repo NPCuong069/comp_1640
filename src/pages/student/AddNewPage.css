@@ -1,0 +1,581 @@
+.custom-container {
+    width: 1440px;
+    height: 1311px;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ----------------------------------------------------------------------- */
+.header {
+    width: 1440px;
+    height: 105px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    width: 1083px;
+    height: 105px;
+    position: absolute;
+    left: 178px;
+    top: 0;
+}
+
+.header-content img {
+    width: 208px;
+    /* w-52 */
+    height: 105px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.header-item {
+    position: absolute;
+    top: 40px;
+    /* Adjust if necessary */
+    color: black;
+    font-size: 1rem;
+    /* text-base */
+    font-weight: normal;
+    font-family: 'Roboto', sans-serif;
+}
+
+.header-item:nth-child(2) {
+    left: 1000px;
+}
+
+.header-item:nth-child(3) {
+    left: 895px;
+}
+
+.header-item:nth-child(4) {
+    left: 360px;
+}
+
+.header-item:nth-child(5) {
+    left: 223px;
+}
+
+.account-menu {
+    height: 80px;
+    /* h-20 */
+    position: absolute;
+    left: 1074px;
+    top: 71px;
+    background-color: #FED7D7;
+    /* bg-red-50 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+}
+
+.menu-item {
+    padding: 8px 16px;
+    /* px-4 py-2 */
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 16px;
+    /* gap-4 */
+    color: black;
+    font-size: 1rem;
+    /* text-base */
+    font-weight: normal;
+    font-family: 'Roboto', sans-serif;
+    opacity: 0.9;
+    /* text-opacity-90 */
+}
+
+/* ---------------------------------------------------- */
+.main-title {
+    position: absolute;
+    left: 178px;
+    top: 131px;
+    color: black;
+    font-size: 1.25rem;
+    /* tương đương với text-xl trong Tailwind */
+    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+    text-align: justify;
+}
+
+.article-details {
+    width: 580px;
+    height: 82px;
+    position: absolute;
+    left: 178px;
+    top: 167px;
+}
+
+.closure-date,
+.faculty {
+    position: absolute;
+    left: 0;
+    color: black;
+    font-size: 1rem;
+    /* tương đương với text-base trong Tailwind */
+    font-weight: normal;
+    font-family: 'Inter', sans-serif;
+}
+
+.closure-date {
+    top: 12px;
+}
+
+.faculty {
+    top: 41px;
+}
+
+/* --------------------------------------- */
+
+.customer-container {
+    width: 1083px;
+    height: 787px;
+    position: absolute;
+    left: 178px;
+    top: 249px;
+}
+
+/* --------------------------------------- */
+
+.article-title,
+.article-content,
+.file-submissions {
+    position: absolute;
+    left: 0;
+    color: black;
+    font-size: 1rem;
+    /* text-base */
+    font-weight: normal;
+    font-family: 'Inter', sans-serif;
+}
+
+.article-title {
+    top: 0;
+}
+
+.article-content {
+    top: 131px;
+}
+
+.file-submissions {
+    top: 344px;
+}
+
+/* --------------------------------------- */
+
+.article-wrapper {
+    height: 81px;
+    left: 0;
+    top: 29px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 2px;
+}
+
+.article-input,
+.article-content-input {
+    width: 741px;
+    padding-left: 2px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    /* border-gray-200 */
+    display: inline-flex;
+    justify-content: start;
+    align-items: center;
+    gap: 2px;
+}
+
+.article-input {
+    height: 81px;
+}
+
+.article-content-input {
+    height: 163px;
+    top: 160px;
+    position: absolute;
+}
+
+.input-placeholder,
+.content-placeholder {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+    color: #a0aec0;
+    /* text-gray-400 */
+    font-size: 0.875rem;
+    /* text-sm */
+    font-weight: normal;
+    font-family: 'Inter', sans-serif;
+    line-height: normal;
+}
+
+.content-placeholder {
+    height: 157px;
+}
+
+/* --------------------------------------- */
+.custom-box {
+    width: 741px;
+    height: 194px;
+    position: absolute;
+    left: 0;
+    top: 429px;
+    border: 1px solid #e2e8f0;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* --------------------------------------- */
+.header-container {
+    width: 741px;
+    height: 34px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.header-item {
+    position: absolute;
+    top: 5px;
+    color: black;
+    font-size: 0.875rem;
+    font-weight: normal;
+    font-family: 'Inter', sans-serif;
+    line-height: normal;
+}
+
+.name {
+    left: 6px;
+}
+
+.size {
+    left: 538px;
+}
+
+.type {
+    left: 647px;
+}
+
+/* --------------------------------------- */
+
+.file-info {
+    position: absolute;
+    color: black;
+    font-size: 0.875rem;
+    /* Equivalent to text-sm */
+    font-family: 'Inter', sans-serif;
+}
+
+.size-first {
+    left: 535px;
+    top: 49px;
+}
+
+.size-second {
+    left: 535px;
+    top: 100px;
+}
+
+.type-first {
+    left: 647px;
+    top: 49px;
+}
+
+.type-second {
+    left: 647px;
+    top: 100px;
+}
+
+.icon-container {
+    width: 17px;
+    height: 40px;
+    left: 724px;
+    top: 34px;
+    position: absolute;
+    background-color: #e2e8f0;
+    /* bg-zinc-100 */
+    /* Additional styles for inner elements needed */
+}
+
+.file-entry {
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+
+.first-entry {
+    width: 477px;
+    height: 31.27px;
+    left: 11px;
+    top: 45px;
+}
+
+.file-icon {
+    position: absolute;
+}
+
+.first-icon {
+    width: 29px;
+    height: 31.27px;
+    left: 11px;
+    top: 45px;
+}
+
+.second-icon {
+    width: 47px;
+    height: 40px;
+    /* h-10 equivalent */
+    left: 2px;
+    top: 87px;
+}
+
+.file-name {
+    margin-left: 34px;
+    color: black;
+    font-size: 1rem;
+    /* Equivalent to text-base */
+    font-family: 'Inter', sans-serif;
+    text-align: justify;
+}
+
+.second-name {
+    left: 45px;
+    top: 102px;
+    position: absolute;
+}
+
+/* --------------------------------------- */
+
+.outer-container {
+    width: 741px;
+    height: 55px;
+    position: absolute;
+    left: 0;
+    top: 374px;
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    /* border-gray-200 with opacity */
+}
+
+.add-new-button {
+    height: 36px;
+    /* 9*4 = 36px to follow the Tailwind's h-9 unit */
+    padding-left: 12px;
+    /* 3*4 = 12px for pl-3 */
+    padding-right: 16px;
+    /* 4*4 = 16px for pr-4 */
+    padding-top: 6px;
+    /* 1.5*4 = 6px for py-1.5 */
+    padding-bottom: 6px;
+    /* 1.5*4 = 6px for py-1.5 */
+    position: absolute;
+    left: 0;
+    top: 10px;
+    border: 1px solid #7c3aed;
+    /* border-violet-700 */
+    border-radius: 0.375rem;
+    /* Tailwind's rounded value */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    /* 2*4 = 8px for gap-2 */
+}
+
+.add-new-text {
+    text-align: center;
+    color: #7c3aed;
+    /* text-violet-700 */
+    font-size: 0.875rem;
+    /* Tailwind's text-sm */
+    font-weight: medium;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    line-height: normal;
+    letter-spacing: 0.05em;
+    /* tracking-tight */
+}
+
+/* --------------------------------------- */
+.file-type-container {
+    width: 736px;
+    height: 72px;
+    position: absolute;
+    left: 5px;
+    top: 633px;
+}
+
+.file-type-title,
+.document-files,
+.image-files,
+.document-formats,
+.image-formats {
+    position: absolute;
+    left: 0;
+    color: black;
+    font-size: 0.875rem;
+    /* Equivalent to text-sm */
+    font-weight: normal;
+    font-family: 'Inter', sans-serif;
+}
+
+.document-files {
+    top: 24px;
+}
+
+.image-files {
+    top: 48px;
+}
+
+.document-formats,
+.image-formats {
+    left: 114px;
+    color: #a0a0a0;
+    /* Equivalent to text-stone-400 */
+}
+
+.document-formats {
+    top: 24px;
+}
+
+.image-formats {
+    top: 48px;
+}
+
+/* --------------------------------------- */
+
+.button {
+    position: absolute;
+    top: 726px;
+    padding: 6px 16px;
+    /* Corresponds to py-1.5 and px-4 */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    /* Tailwind's gap-2 */
+    border-radius: 0.375rem;
+    /* Tailwind's rounded */
+    color: white;
+    font-size: 0.875rem;
+    /* Tailwind's text-sm */
+    font-weight: 500;
+    /* Medium */
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 0.05em;
+    /* Tailwind's tracking-tight */
+    line-height: normal;
+}
+
+.apply {
+    width: 132px;
+    height: 41px;
+    left: 5px;
+    background-color: #7c3aed;
+    /* Tailwind's bg-violet-700 */
+}
+
+.cancel {
+    width: 87px;
+    height: 41px;
+    left: 166px;
+    background-color: #ef4444;
+    /* Tailwind's bg-red-500 */
+}
+
+
+/* --------------------------------------- */
+
+.footer-container {
+    width: 1440px;
+    height: 249px;
+    position: absolute;
+    left: -7px;
+    top: 1062px;
+    background-color: #1f2937;
+    /* bg-zinc-800 */
+    mix-blend-mode: exclusion;
+}
+
+.section,
+.detail {
+    position: absolute;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+.section {
+    font-size: 1.25rem;
+    /* text-xl */
+    font-weight: bold;
+}
+
+.detail {
+    font-size: 1rem;
+    /* text-base */
+    font-weight: normal;
+}
+
+.contact-info {
+    left: 169px;
+    top: 41px;
+}
+
+.additional-resources,
+.about-magazine {
+    left: 641px;
+    top: 43px;
+}
+
+.legal-compliance {
+    left: 169px;
+    top: 173px;
+}
+
+.social-media,
+.social-icons {
+    left: 1113px;
+    top: 36px;
+}
+
+.support-email,
+.address,
+.terms-conditions,
+.copyright {
+    left: 169px;
+    top: 74px;
+}
+
+.address {
+    top: 98px;
+}
+
+.terms-conditions {
+    top: 98px;
+    left: 641px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.icon {
+    padding: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+    width: 40px;
+    height: 40px;
+}
