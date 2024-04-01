@@ -22,6 +22,11 @@ const navConfig = [
     path: '/admin/faculty',
     icon: icon('ic_cart'),
   },
+  {
+    title: 'closure date',
+    path: '/admin/closureDate',
+    icon: icon('calendar'),
+  },
 
 
 ];

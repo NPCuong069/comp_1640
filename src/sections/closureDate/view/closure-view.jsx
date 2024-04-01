@@ -154,7 +154,7 @@ export default function Faculty() {
         <Typography variant="h4">Faculties</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
-          New Faculty
+          New Closure Date
         </Button>
       </Stack>
 
@@ -176,7 +176,8 @@ export default function Faculty() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Faculty name' },
+                  { id: 'startDate', label: 'Closure start date' },
+                  { id: 'endDate', label: 'Closure end date' },
                   { id: 'action', label: 'Action' },
                   { id: '' },
                 ]}

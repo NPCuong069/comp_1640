@@ -11,7 +11,7 @@ function ArticleDropdown() {
     return (
 
         <div className=' mt-3 grid grid-cols-1 text-xl gap-2'>
-            <h1 className=' bg-gray-300 p-2 text-3xl flex items-center gap-2 justify-between'> <div className='flex items-center'><button className='text-5xl' onClick={(e) => setShow(!show)}>{show ? <IoMdArrowDropdown className='' /> : <IoMdArrowDropright className='' />}</button> Submission no.# </div> <p className='text-2xl text-red-500'>Commented</p>  </h1>
+            <h1 className=' bg-gray-300 p-2 text-3xl flex items-center gap-2 justify-between'> <div className='flex items-center'><button className='text-5xl' onClick={(e) => setShow(!show)}>{show ? <IoMdArrowDropdown className='' /> : <IoMdArrowDropright className='' />}</button> Files and Comment</div> <p className='text-2xl text-red-500'>Commented</p>  </h1>
             {show && <form action="">
                 <table className='w-full  [&>tbody>*:nth-child(odd)]:bg-gray-200 [&>tbody>*:nth-child()]:p-2  '>
                     <tbody className=' p-2'>
@@ -36,7 +36,7 @@ function ArticleDropdown() {
                                 File submission
                             </td>
                             <td className='flex items-center gap-2'>
-                                <FaFilePdf /> Lorem ipsum dolor sit amet, consectetur adipiscing elit.pdf
+                                <FaFilePdf /> Filename.pdf
                             </td>
                         </tr>
                         <tr>

@@ -9,7 +9,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Tabs, Tab, Box, Modal, TextField } from '@mui/material';
+import { Tabs, Tab, Box, Modal, TextField, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 
 import Iconify from '../../../components/iconify';
@@ -43,14 +43,44 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newFacultyName, setNewFacultyName] = useState('');
+  const handleSubmitStudent = async () => {
+    if (!newStudent.username.trim() || !newStudent.email.trim() || !newStudent.password.trim()) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    // Additional validation as needed
 
-  // const handleSort = (event, id) => {
-  //   const isAsc = orderBy === id && order === 'asc';
-  //   if (id !== '') {
-  //     setOrder(isAsc ? 'desc' : 'asc');
-  //     setOrderBy(id);
-  //   }
-  // };
+    try {
+      const response = await fetch('https://localhost:7002/api/Admin/add-new-user', { // Adjust endpoint as necessary
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Include if needed
+        },
+        body: JSON.stringify(newStudent),
+      });
+
+      if (response.ok) {
+        alert('Student added successfully.');
+        setIsModalOpen(false);
+        setNewStudent({ firstName: '', lastName: '', username: '', email: '', password: '' }); // Reset form
+        fetchUsers(); // Refresh the list of users
+      } else {
+        alert('Failed to add student. Username already existed.');
+      }
+    } catch (error) {
+      console.error('Error adding student:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+  const [newStudent, setNewStudent] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    roleName: ''
+  });
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -100,7 +130,7 @@ export default function UserPage() {
   });
   const fetchUsers = async () => {
     try {
-      const response = await fetch('https://localhost:7002/api/Users');
+      const response = await fetch('https://localhost:7002/api/Users/get-all-user');
       if (!response.ok) {
         throw new Error('Could not fetch users');
       }
@@ -112,6 +142,10 @@ export default function UserPage() {
     }
   };
   useEffect(() => {
+    const savedTab = localStorage.getItem('selectedTab');
+    if (savedTab !== null) {
+        setActiveTab(Number(savedTab));
+    }
     fetchUsers();
     fetchFaculties();
   }, []);
@@ -120,11 +154,9 @@ export default function UserPage() {
     setIsModalOpen(true);
   };
   const [faculties, setFaculties] = useState([]);
-
-
   const fetchFaculties = async () => {
     try {
-      const response = await fetch('https://localhost:7002/api/Users/faculties');
+      const response = await fetch('https://localhost:7002/api/Faculties/get-all-faculties');
       if (!response.ok) {
         throw new Error('Could not fetch faculties');
       }
@@ -134,13 +166,11 @@ export default function UserPage() {
       console.error("Error fetching faculties:", error);
     }
   };
-
   const handleSubmitFaculty = async () => {
     if (!newFacultyName.trim()) {
       alert('Please enter a faculty name.');
       return;
     }
-
     try {
       const response = await fetch('https://localhost:7002/api/Admin/add-new-faculty', {
         method: 'POST',
@@ -150,7 +180,6 @@ export default function UserPage() {
         },
         body: JSON.stringify({ facultyName: newFacultyName }),
       });
-
       if (response.ok) {
         alert('Faculty added successfully.');
         setIsModalOpen(false);
@@ -169,14 +198,14 @@ export default function UserPage() {
     comparator: getComparator(order, orderBy),
     filterName,
   }).filter((user) => {
-    if (activeTab === 0) return user.roleName === "Default";
-    if (activeTab === 1) return user.roleName !== "Default";
+    if (activeTab === 0) return user.facultyName === "No Faculty";
+    if (activeTab === 1) return user.facultyName !== "No Faculty";
     return true;
   });
   const headLabels = [
     { id: 'name', label: 'Username' },
     { id: 'fullName', label: 'Full name' },
-    activeTab === 1 ? { id: 'faculty', label: 'Faculty' } : null, 
+    { id: 'faculty', label: 'Faculty' },
     { id: 'email', label: 'Email' },
     { id: 'role', label: 'Role' },
     { id: 'action', label: 'Action' },
@@ -184,12 +213,11 @@ export default function UserPage() {
   ].filter(label => label !== null);
   return (
     <Container>
-
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Users</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
-          New Faculty
+          New User
         </Button>
       </Stack>
       <Tabs value={activeTab} onChange={handleTabChange} aria-label="user status tabs">
@@ -202,7 +230,6 @@ export default function UserPage() {
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
-
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
@@ -211,7 +238,6 @@ export default function UserPage() {
                 orderBy={orderBy}
                 rowCount={users.length}
                 numSelected={selected.length}
-             
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={headLabels}
               />
@@ -220,15 +246,15 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.userName} 
+                      key={row.userName}
                       username={row.userName}
-                      name={`${row.firstName} ${row.lastName}`} 
+                      name={`${row.firstName} ${row.lastName}`}
                       email={row.email}
                       faculties={faculties}
-                      faculty={row.facultyName}
-                      role={row.roleName} 
-                      status={row.roleName === "Default" ? 'pending' : 'activated'} 
-                      selected={selected.indexOf(row.userName) !== -1} 
+                      facultyname={row.facultyName}
+                      role={row.roleName}
+                      status={row.facultyName ==="No Faculty" ? 'pending' : 'activated'}
+                      selected={selected.indexOf(row.userName) !== -1}
                       handleClick={(event) => handleClick(event, row.userName)}
                     />
                   ))}
@@ -262,29 +288,76 @@ export default function UserPage() {
       >
         <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add New Faculty
+            Add New Student
           </Typography>
-          <Box component="form" sx={{ mt: 2 }}>
+          <Box component="form" sx={{ mt: 2 }} noValidate autoComplete="off">
             <TextField
               autoFocus
               margin="dense"
-              id="facultyName"
-              label="Faculty Name"
+              id="firstName"
+              name="firstName"
+              label="First Name"
               type="text"
               fullWidth
               variant="standard"
-              value={newFacultyName}
-              onChange={(e) => setNewFacultyName(e.target.value)}
+              value={newStudent.firstName}
+              onChange={(e) => setNewStudent({ ...newStudent, firstName: e.target.value })}
             />
-            <Button onClick={handleSubmitFaculty} sx={{ mt: 2, mr: 1 }}>
-              Submit
-            </Button>
-            <Button onClick={() => setIsModalOpen(false)} sx={{ mt: 2 }}>
-              Cancel
-            </Button>
+            <TextField
+              margin="dense"
+              id="lastName"
+              name="lastName"
+              label="Last Name"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={newStudent.lastName}
+              onChange={(e) => setNewStudent({ ...newStudent, lastName: e.target.value })}
+            />
+            <TextField
+              margin="dense"
+              id="username"
+              name="username"
+              label="Username"
+              type="text"
+              fullWidth
+              variant="standard"
+              value={newStudent.username}
+              onChange={(e) => setNewStudent({ ...newStudent, username: e.target.value })}
+            />
+            <TextField
+              margin="dense"
+              id="email"
+              name="email"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="standard"
+              value={newStudent.email}
+              onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value, password: e.target.value })}
+            />
+            <FormControl fullWidth margin="dense" variant="standard">
+              <InputLabel id="role-select-label">Role</InputLabel>
+              <Select
+                labelId="role-select-label"
+                id="role-select"
+                value={newStudent.roleName}
+                onChange={(e) => setNewStudent({ ...newStudent, roleName: e.target.value })}
+                fullWidth
+              >
+                <MenuItem value="Student">Student</MenuItem>
+                <MenuItem value="Marketing Coordinator">Marketing Coordinator</MenuItem>
+                <MenuItem value="Marketing Manager">Marketing Manager</MenuItem>
+              </Select>
+            </FormControl>
+            <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+              <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+              <Button variant="contained" onClick={handleSubmitStudent}>Submit</Button>
+            </Stack>
           </Box>
         </Box>
       </Modal>
+
     </Container>
   );
 }

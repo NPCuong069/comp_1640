@@ -31,7 +31,11 @@ export default function UserTableRow({
   useEffect(() => {
     setUserRole(role);
   }, [role]);
-
+  useEffect(() => {
+    setUserRole(role);
+    setSelectedFaculty(facultyname || ''); 
+    console.log(facultyname);
+  }, [role, facultyname]);
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -49,7 +53,7 @@ export default function UserTableRow({
           userName: username, // Assuming you have the user's userName accessible under a `user` prop
           facultyName: newFacultyName,
         };
-        const response = await fetch('https://localhost:7002/api/Admin/assign-student-to-faculty', {
+        const response = await fetch('https://localhost:7002/api/Admin/assign-user-to-faculty', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -60,7 +64,9 @@ export default function UserTableRow({
 
         if (response.ok) {
           alert('Faculty updated successfully.');
-          setSelectedFaculty(newFacultyName); 
+          setSelectedFaculty(newFacultyName);
+          localStorage.setItem('selectedTab', facultyname!="No Faculty"?1:0); 
+          window.location.reload();
         } else {
           alert('Failed to update faculty. User is not a student.');
         }
@@ -129,6 +135,7 @@ export default function UserTableRow({
       }
 
       alert('User activated successfully with role: ' + userRole);
+      localStorage.setItem('selectedTab', facultyname!="No Faculty"?0:1); 
       window.location.reload();
       // Here you might want to trigger a refresh of the user list or perform other UI updates
     } catch (error) {
@@ -137,10 +144,9 @@ export default function UserTableRow({
     }
   };
 
-  const handleRoleChange = (event) => {
-    const newRole = event.target.value;
-    setUserRole(newRole);
-  };
+
+
+
   console.log(faculties);
   return (
     <>
@@ -157,43 +163,29 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
         <TableCell>{name}</TableCell>
-        {status !== "pending" && (
-        <TableCell>      <Select
-          value={selectedFaculty}
-          onChange={handleFacultyChange}
-          displayEmpty
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          <MenuItem value="" disabled>
-            Select Faculty
-          </MenuItem>
-          {faculties.map((faculty) => (
-            <MenuItem key={faculty.facultyName} value={faculty.facultyName}>
-              {faculty.facultyName}
+        <TableCell>
+          <Select
+            value={selectedFaculty}
+            onChange={handleFacultyChange}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Without label' }}
+          >
+            <MenuItem value="No Faculty" >
+              No Faculty
             </MenuItem>
-          ))}
-        </Select></TableCell>)}
+            {faculties.map((faculty) => (
+              <MenuItem key={faculty.facultyName} value={faculty.facultyName}>
+                {faculty.facultyName}
+              </MenuItem>
+            ))}
+          </Select>
+        </TableCell>
 
         <TableCell>{email}</TableCell>
 
-        <TableCell>   <Select
-          value={userRole || ''}
-          onChange={handleRoleChange}
-          size="small"
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value='' selected>Select role</MenuItem>
-          <MenuItem value="Student">Student</MenuItem>
-          <MenuItem value="Marketing Coordinator">Marketing Coordinator</MenuItem>
-          <MenuItem value="Marketing Manager">Marketing Manager</MenuItem>
-        </Select></TableCell>
+        <TableCell>   {role}</TableCell>
 
         <TableCell >
-          {status === 'pending' && (
-            <Button color="primary" variant="contained" size="small" onClick={handleActivateClick} >
-              Activate
-            </Button>
-          )}
           <Button
             color="warning"
             variant="contained"
