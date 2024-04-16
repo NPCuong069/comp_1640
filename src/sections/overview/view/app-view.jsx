@@ -1,228 +1,241 @@
-import { faker } from '@faker-js/faker';
-
+import React, { useEffect, useState } from 'react';
+import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement, PointElement, } from 'chart.js';
+import { Bar, Pie } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
+import { getAllContributions, getAcademicTerms } from '../services/apiServices';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2/Grid2';
+import { Typography } from '@mui/material';
 
-import Iconify from '../../../components/iconify';
-
-import AppTasks from '../app-tasks';
-import AppNewsUpdate from '../app-news-update';
-import AppOrderTimeline from '../app-order-timeline';
-import AppCurrentVisits from '../app-current-visits';
-import AppWebsiteVisits from '../app-website-visits';
-import AppWidgetSummary from '../app-widget-summary';
-import AppTrafficBySite from '../app-traffic-by-site';
-import AppCurrentSubject from '../app-current-subject';
-import AppConversionRates from '../app-conversion-rates';
-
-// ----------------------------------------------------------------------
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, LineElement,PointElement);
 
 export default function AppView() {
+  
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Number of Contributions',
+        data: [],
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  });
+  const [trendData, setTrendData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Daily Contributions',
+        data: [],
+        borderColor: 'rgba(75, 192, 192, 0.7)',
+        backgroundColor: 'rgba(75, 192, 192, 0.3)',
+        fill: true,
+        tension: 0.1
+      },
+    ]
+  });
+  const [pieData, setPieData] = useState({
+    labels: [],
+    datasets: [{
+      label: 'Contributions by Faculty',
+      data: [],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.6)',
+        'rgba(54, 162, 235, 0.6)',
+        'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)',
+        'rgba(153, 102, 255, 0.6)',
+        'rgba(255, 159, 64, 0.6)'
+      ],
+      hoverOffset: 4
+    }]
+  });
+
+  const [selectedRateData, setSelectedRateData] = useState({
+    labels: [],
+    datasets: [{
+      label: 'Rate of Selected Contributions by Faculty (%)',
+      data: [],
+      backgroundColor: [
+        'rgba(75, 192, 192, 0.5)',
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(255, 206, 86, 0.5)',
+        'rgba(153, 102, 255, 0.5)',
+        'rgba(255, 159, 64, 0.5)'
+      ]
+    }]
+  });
+
+  const [nonPendingRateData, setNonPendingRateData] = useState({
+    labels: [],
+    datasets: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const contributions = await getAllContributions();
+      const terms = await getAcademicTerms();
+      const allDates = [];
+      // Processing for bar and pie charts
+      const termMap = terms.reduce((acc, term) => {
+        acc[term.academicTermId] = term.academicYear;
+        return acc;
+      }, {});
+
+      const contributionCounts = contributions.reduce((acc, contribution) => {
+        acc[contribution.academicTermId] = (acc[contribution.academicTermId] || 0) + 1;
+        return acc;
+      }, {});
+
+      const facultyCounts = contributions.reduce((acc, contribution) => {
+        acc[contribution.facultyName] = (acc[contribution.facultyName] || 0) + 1;
+        return acc;
+      }, {});
+
+      const selectedCounts = contributions.reduce((acc, contribution) => {
+        if (contribution.status === "Selected") {
+          acc[contribution.facultyName] = (acc[contribution.facultyName] || 0) + 1;
+        }
+        return acc;
+      }, {});
+
+      const nonPendingCounts = contributions.reduce((acc, contribution) => {
+        if (contribution.status !== "Pending") {
+          const key = `${contribution.facultyName}-${contribution.academicTermId}`;
+          acc[key] = (acc[key] || 0) + 1;
+        }
+        return acc;
+      }, {});
+      const dateCounts = contributions.reduce((acc, contribution) => {
+        const date = new Date(contribution.submissionDate).toLocaleDateString();
+        acc[date] = (acc[date] || 0) + 1;
+        return acc;
+      }, {});
+      const facultyContributions = contributions.reduce((acc, {facultyName, submissionDate, academicTermId}) => {
+        const date = new Date(submissionDate).toLocaleDateString();
+        if (!acc[facultyName]) {
+          acc[facultyName] = {};
+        }
+        if (!acc[facultyName][date]) {
+          acc[facultyName][date] = 0;
+        }
+        acc[facultyName][date]++;
+        return acc;
+      }, {});
+      const facultyDatasets2 = Object.keys(facultyContributions).map(faculty => {
+        const color = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`;
+        const data = allDates.map(date => facultyContributions[faculty][date] || 0);
+        return {
+          label: faculty,
+          data,
+          borderColor: color,
+          backgroundColor: color,
+          fill: false,
+          tension: 0.1
+        };
+      });
+
+      // Extract all unique dates and sort them
+      contributions.forEach(({submissionDate}) => {
+        const formattedDate = new Date(submissionDate).toLocaleDateString();
+        if (allDates.indexOf(formattedDate) === -1) {
+          allDates.push(formattedDate);
+        }
+      });
+      allDates.sort((a, b) => new Date(a) - new Date(b));
+
+
+      const sortedDates = Object.keys(dateCounts).sort((a, b) => new Date(a) - new Date(b));
+      const datasets = Object.entries(termMap).map(([termId, termName]) => ({
+        label: termName,
+        data: Object.keys(facultyCounts).map(faculty => nonPendingCounts[`${faculty}-${termId}`] || 0),
+        backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`
+      }));
+
+      const facultyDateCounts = contributions.reduce((acc, contribution) => {
+        const date = new Date(contribution.submissionDate).toLocaleDateString();
+        const faculty = contribution.facultyName;
+        if (!acc[faculty]) {
+          acc[faculty] = {};
+        }
+        if (!acc[faculty][date]) {
+          acc[faculty][date] = 0;
+        }
+        acc[faculty][date]++;
+        return acc;
+      }, {});
+      
+      const colors = ['rgba(255, 99, 132, 0.5)', 'rgba(54, 162, 235, 0.5)', 'rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 159, 64, 0.5)'];
+      let colorIndex = 0;
+      
+      const facultyDatasets = Object.keys(facultyContributions).map(faculty => {
+        const color = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.5)`;
+        const data = allDates.map(date => facultyContributions[faculty][date] || 0);
+        return {
+          label: faculty,
+          data,
+          borderColor: color,
+          backgroundColor: color,
+          fill: false,
+          tension: 0.1
+        };
+      });
+      
+      setTrendData({
+        labels: allDates, // This assumes all faculties have the same date range
+        datasets: facultyDatasets
+      });
+      setChartData({
+        labels: Object.keys(termMap).map(key => termMap[key]),
+        datasets: [{ ...chartData.datasets[0], data: Object.keys(contributionCounts).map(key => contributionCounts[key]) }]
+      });
+
+      setPieData({
+        labels: Object.keys(facultyCounts),
+        datasets: [{ ...pieData.datasets[0], data: Object.values(facultyCounts) }]
+      });
+
+      setSelectedRateData({
+        labels: Object.keys(facultyCounts),
+        datasets: [{ ...selectedRateData.datasets[0], data: Object.keys(facultyCounts).map(faculty => (selectedCounts[faculty] || 0) / (facultyCounts[faculty] || 1) * 100) }]
+      });
+
+      setNonPendingRateData({
+        labels: Object.keys(facultyCounts),
+        datasets
+      });
+
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
         Hi, Welcome back 👋
       </Typography>
-
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Weekly Sales"
-            total={714000}
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="New Users"
-            total={1352831}
-            color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Item Orders"
-            total={1723315}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Bug Reports"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
-          />
-        </Grid>
-
         <Grid xs={12} md={6} lg={8}>
-          <AppWebsiteVisits
-            title="Website Visits"
-            subheader="(+43%) than last year"
-            chart={{
-              labels: [
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ],
-              series: [
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ],
-            }}
-          />
+          <h2>Contributions by academic year</h2>
+          <Bar data={chartData} options={{ responsive: true }} />
         </Grid>
-
         <Grid xs={12} md={6} lg={4}>
-          <AppCurrentVisits
-            title="Current Visits"
-            chart={{
-              series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ],
-            }}
-          />
+          <h2>Contributions by Faculty</h2>
+          <Pie data={pieData} options={{ responsive: true }} />
         </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AppConversionRates
-            title="Conversion Rates"
-            subheader="(+43%) than last year"
-            chart={{
-              series: [
-                { label: 'Italy', value: 400 },
-                { label: 'Japan', value: 430 },
-                { label: 'China', value: 448 },
-                { label: 'Canada', value: 470 },
-                { label: 'France', value: 540 },
-                { label: 'Germany', value: 580 },
-                { label: 'South Korea', value: 690 },
-                { label: 'Netherlands', value: 1100 },
-                { label: 'United States', value: 1200 },
-                { label: 'United Kingdom', value: 1380 },
-              ],
-            }}
-          />
+        <Grid xs={12} md={6} lg={6}>
+          <h2>Rate of Selected Contributions by Faculty</h2>
+          <Bar data={selectedRateData} options={{ responsive: true, indexAxis: 'y' }} />
         </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AppCurrentSubject
-            title="Current Subject"
-            chart={{
-              categories: ['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math'],
-              series: [
-                { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-                { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-                { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
-              ],
-            }}
-          />
+        <Grid xs={12} md={6} lg={6}>
+          <h2>Rate of Repplied Contributions by Faculty per Term</h2>
+          <Bar data={nonPendingRateData} options={{ responsive: true, scales: { x: { stacked: true }, y: { stacked: true } } }} />
         </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AppNewsUpdate
-            title="News Update"
-            list={[...Array(5)].map((_, index) => ({
-              id: faker.string.uuid(),
-              title: faker.person.jobTitle(),
-              description: faker.commerce.productDescription(),
-              image: `/assets/images/covers/cover_${index + 1}.jpg`,
-              postedAt: faker.date.recent(),
-            }))}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AppOrderTimeline
-            title="Order Timeline"
-            list={[...Array(5)].map((_, index) => ({
-              id: faker.string.uuid(),
-              title: [
-                '1983, orders, $4220',
-                '12 Invoices have been paid',
-                'Order #37745 from September',
-                'New order placed #XF-2356',
-                'New order placed #XF-2346',
-              ][index],
-              type: `order${index + 1}`,
-              time: faker.date.past(),
-            }))}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AppTrafficBySite
-            title="Traffic by Site"
-            list={[
-              {
-                name: 'FaceBook',
-                value: 323234,
-                icon: <Iconify icon="eva:facebook-fill" color="#1877F2" width={32} />,
-              },
-              {
-                name: 'Google',
-                value: 341212,
-                icon: <Iconify icon="eva:google-fill" color="#DF3E30" width={32} />,
-              },
-              {
-                name: 'Linkedin',
-                value: 411213,
-                icon: <Iconify icon="eva:linkedin-fill" color="#006097" width={32} />,
-              },
-              {
-                name: 'Twitter',
-                value: 443232,
-                icon: <Iconify icon="eva:twitter-fill" color="#1C9CEA" width={32} />,
-              },
-            ]}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AppTasks
-            title="Tasks"
-            list={[
-              { id: '1', name: 'Create FireStone Logo' },
-              { id: '2', name: 'Add SCSS and JS files if required' },
-              { id: '3', name: 'Stakeholder Meeting' },
-              { id: '4', name: 'Scoping & Estimations' },
-              { id: '5', name: 'Sprint Showcase' },
-            ]}
-          />
+        <Grid xs={12} md={12}>
+          <h2>Daily Contribution Trends</h2>
+          <Line data={trendData} options={{ responsive: true, scales: { y: { beginAtZero: true } } }} />
         </Grid>
       </Grid>
     </Container>

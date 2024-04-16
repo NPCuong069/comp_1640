@@ -17,7 +17,10 @@ import Iconify from '../../components/iconify';
 
 export default function UserTableRow({
   selected,
-  facultyName,
+  entryDate,
+  closureDate,
+  finalClosure,
+  academicYear,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -36,7 +39,6 @@ export default function UserTableRow({
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-
       if (response.status === 204) {
         alert('Faculty successfully deleted.');
       } else {
@@ -64,13 +66,21 @@ export default function UserTableRow({
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
-
         <TableCell component="th" scope="row" padding="none" >
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap style={{ marginLeft: 20 }}>
-              {facultyName}
+              {academicYear}
             </Typography>
           </Stack>
+        </TableCell>
+        <TableCell>
+              {entryDate}
+        </TableCell>
+        <TableCell>
+              {closureDate}
+        </TableCell>
+        <TableCell >
+              {finalClosure}
         </TableCell>
         <TableCell>
           <Button

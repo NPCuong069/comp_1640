@@ -1,7 +1,5 @@
 import SvgColor from '../../components/svg-color';
 
-// ----------------------------------------------------------------------
-
 const icon = (name) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
@@ -9,7 +7,7 @@ const icon = (name) => (
 const navConfig = [
   {
     title: 'dashboard',
-    path: '/',
+    path: '/admin/index',
     icon: icon('ic_analytics'),
   },
   {
@@ -27,8 +25,6 @@ const navConfig = [
     path: '/admin/closureDate',
     icon: icon('calendar'),
   },
-
-
 ];
 
 export default navConfig;

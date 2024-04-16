@@ -7,7 +7,20 @@ import RegisterPage from '../pages/RegisterPage';
 import StudentIndex from '../pages/student/IndexPage';
 import StudentArticleDetails from '../pages/student/ArticleDetailsPage';
 import TermsAndConditionsPage from '../pages/student/TermsAndConditionsPage';
+import HomePage from '../pages/student/HomePage';
 import AddNewPage from '../pages/student/AddNewPage';
+import CoordinatorIndex from '../pages/coordinator/IndexPage';
+import CoordinatorArticleDetails from '../pages/coordinator/ArticleDetailsPage'
+import ManagerIndex from '../pages/manager/IndexPage';
+import ManagerArticleDetails from '../pages/manager/ArticleDetailsPage'
+import ReadingPage from '../pages/student/ReadPage';
+import OverviewPage from '../pages/student/Overview';
+import MarketingCoordinatorOverview from '../pages/coordinator/Overview';
+import ProfileSettings from '../pages/UserProfile';
+import HomeFaculty from '../pages/student/HomeFaculty';
+import GuestHome from '../pages/guest/HomeFaculty';
+import GuestRead from '../pages/guest/ReadPage';
+import MarketingManagerOverview from '../pages/manager/Overview';
 
 import * as jwt_decode from 'jwt-decode';
 const IndexPage = lazy(() => import('../pages/admin/app'));
@@ -17,6 +30,8 @@ const FacultyPage = lazy(() => import('../pages/admin/faculty'));
 const ClosurePage = lazy(() => import('../pages/admin/closureDate'));
 const ProductsPage = lazy(() => import('../pages/admin/products'));
 const Page404 = lazy(() => import('../pages/admin/page-not-found'));
+
+
 
 function decodeJWT(token) {
   if (!token) {
@@ -72,7 +87,23 @@ if (token) {
   const userRole = decodedPayload[roleUri];
   console.log(userRole);
 }
+function CustomLoginRoute() {
+  const userRole = useAuthRole();
 
+  if (userRole === 'Admin') {
+    return <Navigate to="/admin/index" replace />;
+  } else if (userRole === 'Student') {
+    return <Navigate to="/student/index" replace />;
+  } else if (userRole === 'Marketing Coordinator') {
+    return <Navigate to="/coordinator/index" replace />;
+  } else if (userRole === 'Marketing Manager') {
+    return <Navigate to="/manager/index" replace />;
+  } else if (userRole === 'Guest') {
+    return <Navigate to="/guest/home" replace />;
+  }
+  // If no role or not logged in, show the login page
+  return <LoginPage />;
+}
 function ProtectedAdminRoute({ children }) {
   const token = localStorage.getItem('token');
   const decoded = token ? decodeJWT(token) : null;
@@ -94,11 +125,25 @@ function ProtectedMarketingCoordinatorRoute({ children }) {
 
   return userRole === 'Marketing Coordinator' ? children : <Navigate to="/" replace />;
 }
+function ProtectedGuestRoute({ children }) {
+  const token = localStorage.getItem('token');
+  const decoded = token ? decodeJWT(token) : null;
+  const userRole = decoded ? decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : null;
+
+  return userRole === 'Guest' ? children : <Navigate to="/" replace />;
+}
+function ProtectedMarketingManagerRoute({ children }) {
+  const token = localStorage.getItem('token');
+  const decoded = token ? decodeJWT(token) : null;
+  const userRole = decoded ? decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : null;
+
+  return userRole === 'Marketing Manager' ? children : <Navigate to="/" replace />;
+}
 function UnifiedRouter() {
   const commonRoutes = [
-    { path: '/', element: <LoginPage /> },
+    { path: '/', element: <CustomLoginRoute /> },
     { path: '/register', element: <RegisterPage /> },
-    { path: '/student/termsandconditions', element: <TermsAndConditionsPage />}
+    { path: '/student/termsandconditions', element: <TermsAndConditionsPage /> }
   ];
   const studentRoutes = [
     {
@@ -113,6 +158,11 @@ function UnifiedRouter() {
         { path: '/student/index', element: <StudentIndex /> },
         { path: '/student/articleDetails/:title', element: <StudentArticleDetails /> },
         { path: '/student/addNew', element: <AddNewPage /> },
+        { path: '/student/readingPage/:title', element: <ReadingPage /> },
+        { path: '/student/home', element: <HomePage /> },
+        { path: '/student/overview', element: <OverviewPage /> },
+        { path: '/student/profile', element: <ProfileSettings /> },
+        { path: '/student/HomeFaculty/:faculty', element: <HomeFaculty /> },
       ],
     },
   ];
@@ -126,9 +176,41 @@ function UnifiedRouter() {
         </ProtectedMarketingCoordinatorRoute>
       ),
       children: [
-        { path: '/student/index', element: <StudentIndex /> },
-        { path: '/student/articleDetails/:title', element: <StudentArticleDetails /> },
-        { path: '/student/addNew', element: <AddNewPage /> },
+        { path: '/coordinator/index', element: <CoordinatorIndex /> },
+        { path: '/coordinator/articleDetails/:title', element: <CoordinatorArticleDetails /> },
+        { path: '/coordinator/overview', element: <MarketingCoordinatorOverview /> },
+        { path: '/coordinator/profile', element: <ProfileSettings /> },
+      ],
+    },
+  ];
+  const marketingManagerRoutes = [
+    {
+      element: (
+        <ProtectedMarketingManagerRoute>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
+        </ProtectedMarketingManagerRoute>
+      ),
+      children: [
+        { path: '/manager/index', element: <ManagerIndex /> },
+        { path: '/manager/articleDetails/:title', element: <ManagerArticleDetails /> },
+        { path: '/manager/overview', element: <MarketingManagerOverview /> },
+      ],
+    },
+  ];
+  const guestRoutes = [
+    {
+      element: (
+        <ProtectedGuestRoute>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
+        </ProtectedGuestRoute>
+      ),
+      children: [
+        { path: '/guest/home', element: <GuestHome /> },
+        { path: '/guest/readingPage/:title', element: <GuestRead /> },
       ],
     },
   ];
@@ -150,6 +232,7 @@ function UnifiedRouter() {
         { path: 'admin/faculty', element: <FacultyPage /> },
         { path: 'admin/closureDate', element: <ClosurePage /> },
         { path: 'admin/blog', element: <BlogPage /> },
+        { path: 'admin/dashboard', element: <DashboardLayout /> },
         // Possibly more admin routes...
       ],
     },
@@ -157,7 +240,7 @@ function UnifiedRouter() {
     { path: '*', element: <Navigate to="/404" replace /> },
   ];
 
-  const routesConfig = [...commonRoutes, ...studentRoutes, ...adminRoutes];
+  const routesConfig = [...commonRoutes, ...studentRoutes, ...adminRoutes, ...marketingCoordinatorRoutes, ...marketingManagerRoutes, ...guestRoutes];
 
   return useRoutes(routesConfig);
 }

@@ -55,21 +55,22 @@ export default function UserPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Include if needed
         },
         body: JSON.stringify(newStudent),
       });
 
       if (response.ok) {
-        alert('Student added successfully.');
+        alert('User added successfully.');
         setIsModalOpen(false);
         setNewStudent({ firstName: '', lastName: '', username: '', email: '', password: '' }); // Reset form
         fetchUsers(); // Refresh the list of users
       } else {
+        console.log(response.json());
         alert('Failed to add student. Username already existed.');
       }
     } catch (error) {
       console.error('Error adding student:', error);
+      console.log(response.error);
       alert('An error occurred. Please try again.');
     }
   };
@@ -198,8 +199,8 @@ export default function UserPage() {
     comparator: getComparator(order, orderBy),
     filterName,
   }).filter((user) => {
-    if (activeTab === 0) return user.facultyName === "No Faculty";
-    if (activeTab === 1) return user.facultyName !== "No Faculty";
+    if (activeTab === 0) return user.facultyName === null;
+    if (activeTab === 1) return user.facultyName !== null;
     return true;
   });
   const headLabels = [
@@ -288,7 +289,7 @@ export default function UserPage() {
       >
         <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add New Student
+            Add New User
           </Typography>
           <Box component="form" sx={{ mt: 2 }} noValidate autoComplete="off">
             <TextField
@@ -348,6 +349,7 @@ export default function UserPage() {
                 <MenuItem value="Student">Student</MenuItem>
                 <MenuItem value="Marketing Coordinator">Marketing Coordinator</MenuItem>
                 <MenuItem value="Marketing Manager">Marketing Manager</MenuItem>
+                <MenuItem value="Guest">Guest</MenuItem>
               </Select>
             </FormControl>
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>

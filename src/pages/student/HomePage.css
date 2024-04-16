@@ -1,0 +1,52 @@
+@media (min-width:801px){
+.main-headline {
+    display: flex;
+    flex-direction: column; /* Align children vertically */
+  /* Center-align children horizontally */
+    padding: 16px;
+  }
+  /* HomePage.css - Add this at the bottom of your existing CSS file */
+}
+@media (max-width: 768px) {
+    /* Ensures that the widget, headlines, and side headlines stack vertically on small screens */
+    .flex {
+      flex-direction: column;
+    }
+
+    .main-headlines{
+        min-width: 100%;
+    }
+    .weather-widget{
+        min-width: 100%;
+        justify-content: space-between;
+    }
+    .side-headlines {
+      max-width: 100%; /* Full width for small screens */
+      margin: 10px 0; /* Adds vertical spacing between sections */
+    }
+  
+    .main-headline img {
+      max-height: 300px; /* Larger image for mobile, adjust as needed */
+    }
+  
+    .main-headlines, .side-headlines {
+      padding: 10px; /* Reduces padding on small screens */
+    }
+  
+    .side-headlines img {
+      width: 100%; /* Makes side headline images full width of their container */
+      max-height: 150px; /* Consistent image height in side headlines */
+    }
+  }
+  
+  /* Additional styles for very small screens */
+  @media (max-width: 480px) {
+    .main-headline img {
+      max-height: 200px; /* Smaller image height for very small devices */
+    }
+  
+    .news-in-focus {
+      grid-template-columns: 1fr; /* Stacks news items vertically on very small screens */
+    }
+  }
+  

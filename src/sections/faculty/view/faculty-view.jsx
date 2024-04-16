@@ -122,8 +122,9 @@ export default function Faculty() {
       alert('Please enter a faculty name.');
       return;
     }
-
+  
     try {
+      // Step 1: Add new faculty
       const response = await fetch('https://localhost:7002/api/Admin/add-new-faculty', {
         method: 'POST',
         headers: {
@@ -132,17 +133,50 @@ export default function Faculty() {
         },
         body: JSON.stringify({ facultyName: newFacultyName }),
       });
-
+  
       if (response.ok) {
         alert('Faculty added successfully.');
-        setIsModalOpen(false);
-        setNewFacultyName('');
-        window.location.reload();
+        const userName = `Guest_${newFacultyName}`;
+        const password = `${newFacultyName}@123`;
+  
+        // Step 2: Add new guest user
+        const guestResponse = await fetch('https://localhost:7002/api/Admin/add-new-guest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify({ userName, password }),
+        });
+  
+        if (guestResponse.ok) {
+  
+          // Step 3: Assign user to faculty
+          const assignResponse = await fetch('https://localhost:7002/api/Admin/assign-user-to-faculty', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify({ userName, facultyName: newFacultyName }),
+          });
+  
+          if (assignResponse.ok) {
+            setIsModalOpen(false);
+            setNewFacultyName('');
+            window.location.reload();
+          } else {
+            alert('Failed to assign user to faculty.');
+          }
+        } else {
+          alert('Failed to add guest user.');
+        }
       } else {
-        alert('Failed to add faculty.');
+        const errorText = await response.text();
+        alert(`Failed to add faculty: ${errorText}`);
       }
     } catch (error) {
-      console.error('Error adding faculty:', error);
+      console.error('Error handling faculty creation:', error);
       alert('An error occurred. Please try again.');
     }
   };

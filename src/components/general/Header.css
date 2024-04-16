@@ -1,0 +1,65 @@
+/* Header.css - Assuming you create a new CSS file for your header component */
+
+.header {
+    background-color: #f3f4f6; /* Light gray background */
+    padding: 16px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+  
+  .header img {
+    height: 60px; /* Fixed height for the logo */
+    width: auto;
+  }
+  
+  .header nav {
+    display: none; /* Hide navigation on small screens */
+  }
+  
+  .header .profile-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  @media (min-width: 768px) {
+    /* Medium screens and up */
+    .header nav {
+      display: flex; /* Show navigation on medium screens and up */
+    }
+  }
+  /* Header.css */
+@media (max-width: 768px) {
+    .header nav {
+      display: none; /* Initially hides the navigation on mobile */
+    }
+  
+    .header .mobile-menu-button {
+      display: block; /* Shows the menu button on mobile */
+    }
+  
+    .header nav.open {
+      display: flex; /* Shows the navigation when the menu is open */
+      flex-direction: column; /* Stacks the links vertically */
+      background-color: #f3f4f6; /* Ensures the menu has a background */
+      position: absolute;
+      width: 100%; /* Full width */
+      top: 100%; /* Positions below the header */
+      left: 0;
+      padding: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds shadow for better visibility */
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .header .mobile-menu-button {
+      display: none; /* Hides the mobile menu button on desktop */
+    }
+  }

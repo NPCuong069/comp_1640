@@ -1,0 +1,23 @@
+td {
+    padding: 10px;
+
+}
+.change-status-button {
+    display: flex;
+    justify-content: flex-end; /* Align button to the right */
+    padding: 8px; /* Optional padding */
+}
+
+.change-status-button button {
+    background-color: #007bff; /* Blue background color */
+    color: white; /* White text color */
+    border: none; /* No border */
+    padding: 8px 16px; /* Padding around the text */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+.change-status-button button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}

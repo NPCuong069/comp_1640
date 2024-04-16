@@ -37,7 +37,7 @@ function LoginPage() {
       console.error('Token is undefined or null.');
       return null;
     }
-  
+
     try {
       const payload = token.split('.')[1];
       if (!payload) {
@@ -47,7 +47,7 @@ function LoginPage() {
       const jsonPayload = decodeURIComponent(window.atob(base64).split('').map((c) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
-  
+
       return JSON.parse(jsonPayload);
     } catch (error) {
       console.error('Error decoding token:', error);
@@ -65,7 +65,7 @@ function LoginPage() {
         });
 
         // Assuming the token is directly in the response body
-        const token  = response.data;
+        const token = response.data;
         if (token) {
           console.log('Login successful:', token);
           localStorage.setItem('token', token);
@@ -76,11 +76,25 @@ function LoginPage() {
             const roleUri = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
             const userRole = decodedToken[roleUri];
 
+            // Fetch user account information and store additional details
+            const userResponse = await axios.get(`https://localhost:7002/api/Users/userName?userName=${username}`);
+            const { facultyName, roleName } = userResponse.data;
+            localStorage.setItem('username', username);
+            localStorage.setItem('facultyName', facultyName);
+            localStorage.setItem('userRole', roleName);
+            localStorage.setItem('password',password);
             // Navigate based on the role
             if (userRole === 'Student') {
-              navigate('/student/index');
+              navigate('/student/home');
             } else if (userRole === 'Admin') {
               navigate('/admin/user');
+            } else if (userRole === 'Marketing Coordinator') {
+              navigate('/coordinator/index');
+            }else if (userRole === 'Marketing Manager') {
+              navigate('/manager/index');
+            }
+            else if (userRole === 'Guest') {
+              navigate('/guest/home');
             } else {
               console.log('User role not recognized or missing');
             }
@@ -101,11 +115,8 @@ function LoginPage() {
     } else {
       console.error('Validation failed');
     }
-  }
+  };
 
-
-
-  
   return (
     <div className='h-[100vh] w-full relative bg-[url("https://cms.greenwich.edu.vn/pluginfile.php/1/theme_adaptable/p1/1698976651/socialbg.png")] bg-no-repeat bg-cover'>
       <div className='h-[100vh] w-full bg-black opacity-40 absolute top-0 bottom-0'>

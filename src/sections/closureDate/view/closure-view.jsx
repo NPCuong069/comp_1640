@@ -31,9 +31,12 @@ export default function Faculty() {
   };
 
   const [page, setPage] = useState(0);
-
+  const [academicYear, setAcademicYear] = useState('');
+  const [entryDate, setEntryDate] = useState('');
+  const [closureDate, setClosureDate] = useState('');
+  const [finalClosureDate, setFinalClosureDate] = useState('');
   const [order, setOrder] = useState('asc');
-  const [faculties, setFaculties] = useState([]);
+  const [closureDates, setClosureDates] = useState([]);
   const [selected, setSelected] = useState([]);
 
   const [orderBy, setOrderBy] = useState('name');
@@ -54,7 +57,7 @@ export default function Faculty() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = faculties.map((n) => n.name);
+      const newSelecteds = closureDates.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -94,64 +97,103 @@ export default function Faculty() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: faculties,
+    inputData: closureDates,
     comparator: getComparator(order, orderBy),
     filterName,
   });
-  const fetchFaculties = async () => {
+  const fetchClosureDates = async () => {
     try {
-      const response = await fetch('https://localhost:7002/api/Faculties/get-all-faculties');
+      const response = await fetch('https://localhost:7002/api/AcademicTerms');
       if (!response.ok) {
-        throw new Error('Could not fetch faculties');
+        throw new Error('Could not fetch closure dates');
       }
       const data = await response.json();
-      setFaculties(data); // Assuming setUsers is your state setter for user data
+      setClosureDates(data); // Assuming setUsers is your state setter for user data
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
   useEffect(() => {
-    fetchFaculties();
+    fetchClosureDates();
   }, []);
   const notFound = !dataFiltered.length && !!filterName;
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
-  const handleSubmitFaculty = async () => {
-    if (!newFacultyName.trim()) {
-      alert('Please enter a faculty name.');
+  const handleSubmit = async () => {
+    if (!validateForm(academicYear, entryDate, closureDate, finalClosureDate)) {
       return;
-    }
-
+  }
     try {
-      const response = await fetch('https://localhost:7002/api/Admin/add-new-faculty', {
+      const response = await fetch('https://localhost:7002/api/AcademicTerms/add-new-academic-term', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          // Include authorization header if your API requires authentication
+          // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ facultyName: newFacultyName }),
+        body: JSON.stringify({
+          academicYear: academicYear,
+          entryDate: entryDate,
+          closureDate: closureDate,
+          finalClosure: finalClosureDate,
+        }),
       });
-
-      if (response.ok) {
-        alert('Faculty added successfully.');
-        setIsModalOpen(false);
-        setNewFacultyName('');
-        window.location.reload();
-      } else {
-        alert('Failed to add faculty.');
+  
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || 'Failed to add new closure date'); // Use the error message from the response, if available
       }
+  
+      const result = await response.text(); 
+      console.log(result); 
+      alert('Closure date added successfully.');
+      setAcademicYear('');
+      setEntryDate('');
+      setClosureDate('');
+      setFinalClosureDate('');
+      onClose();
+      window.location.reload();
     } catch (error) {
-      console.error('Error adding faculty:', error);
-      alert('An error occurred. Please try again.');
+      console.error('Error submitting new closure date:', error);
     }
   };
+  function validateForm(academicYear, entryDate, closureDate, finalClosureDate) {
+    // Check for empty fields
+    if (!academicYear || !entryDate || !closureDate || !finalClosureDate) {
+        alert('All fields must be filled.');
+        return false;
+    }
 
+    // Validate academic year format
+    const academicYearRegex = /^\d{4}-\d{4}$/;
+    if (!academicYearRegex.test(academicYear)) {
+        alert('Academic year must be in the format yyyy-yyyy.');
+        return false;
+    }
+
+    // Validate date order
+    const entryDateObj = new Date(entryDate);
+    const closureDateObj = new Date(closureDate);
+    const finalClosureObj = new Date(finalClosureDate);
+
+    if (entryDateObj >= closureDateObj) {
+        alert('Closure date must be after entry date.');
+        return false;
+    }
+
+    if (closureDateObj >= finalClosureObj) {
+        alert('Final closure date must be after closure date.');
+        return false;
+    }
+
+    return true;
+}
   return (
     <Container>
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Faculties</Typography>
+        <Typography variant="h4">Closure dates</Typography>
 
         <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenModal}>
           New Closure Date
@@ -171,24 +213,29 @@ export default function Faculty() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={faculties.length}
+                rowCount={closureDates.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'startDate', label: 'Closure start date' },
-                  { id: 'endDate', label: 'Closure end date' },
+                  { id: 'academicYear', label: 'Academic Year' },
+                  { id: 'startDate', label: 'Entries date' },
+                  { id: 'endDate', label: 'Closure date' },
+                  { id: 'finalDate', label: 'Final Closure date' },
                   { id: 'action', label: 'Action' },
                   { id: '' },
                 ]}
               />
               <TableBody>
-                {faculties
+                {closureDates
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.facultyName} // Change from row.id to row.userName
-                      facultyName={row.facultyName}
+                      key={row.entryDate} // Change from row.id to row.userName
+                      academicYear={row.academicYear}
+                      entryDate={row.entryDate}
+                      closureDate={row.closureDate}
+                      finalClosure={row.finalClosure}
                       selected={selected.indexOf(row.userName) !== -1} // Use userName for selection logic
                       handleClick={(event) => handleClick(event, row.userName)}
                     />
@@ -196,7 +243,7 @@ export default function Faculty() {
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, faculties.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, closureDates.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -208,7 +255,7 @@ export default function Faculty() {
         <TablePagination
           page={page}
           component="div"
-          count={faculties.length}
+          count={closureDates.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
@@ -223,21 +270,60 @@ export default function Faculty() {
       >
         <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add New Faculty
+            Add New Closure date
           </Typography>
           <Box component="form" sx={{ mt: 2 }}>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="facultyName"
-              label="Faculty Name"
-              type="text"
-              fullWidth
-              variant="standard"
-              value={newFacultyName}
-              onChange={(e) => setNewFacultyName(e.target.value)}
-            />
-            <Button onClick={handleSubmitFaculty} sx={{ mt: 2, mr: 1 }}>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="academicYear"
+            label="Academic Year (yyyy-yyyy)"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            id="entryDate"
+            label="Entry Date"
+            type="date"
+            fullWidth
+            variant="outlined"
+            value={entryDate}
+            onChange={(e) => setEntryDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="closureDate"
+            label="Closure Date"
+            type="date"
+            fullWidth
+            variant="outlined"
+            value={closureDate}
+            onChange={(e) => setClosureDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            margin="dense"
+            id="finalClosureDate"
+            label="Final Closure Date"
+            type="date"
+            fullWidth
+            variant="outlined"
+            value={finalClosureDate}
+            onChange={(e) => setFinalClosureDate(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+            <Button onClick={handleSubmit} sx={{ mt: 2, mr: 1 }}>
               Submit
             </Button>
             <Button onClick={() => setIsModalOpen(false)} sx={{ mt: 2 }}>

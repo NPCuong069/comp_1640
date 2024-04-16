@@ -57,7 +57,6 @@ export default function UserTableRow({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify(requestBody),
         });
@@ -69,6 +68,7 @@ export default function UserTableRow({
           window.location.reload();
         } else {
           alert('Failed to update faculty. User is not a student.');
+          console.log(response.json());
         }
       } catch (error) {
         console.error('Error updating faculty:', error);
