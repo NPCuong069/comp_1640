@@ -67,8 +67,8 @@ const IndexPage = () => {
 
     useEffect(() => {
         fetchArticles();
-    }, [selectedStatus,searchQuery]);
-    
+    }, [selectedStatus, searchQuery]);
+
     const handleArticleClick = (title) => {
         const formattedTitle = encodeURIComponent(title);
         navigate(`/coordinator/articleDetails/${formattedTitle}`);

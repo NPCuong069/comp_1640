@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoMdArrowDropright } from "react-icons/io";
 import { IoIosAdd, IoIosRemove } from "react-icons/io";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFilePdf, FaFileWord } from "react-icons/fa";
 import "./articleDetails.css";
 import ArticleDropdown from './ArticleDropdown';
 import GeneralLayout from '../../components/general/GeneralLayout';
@@ -25,6 +25,9 @@ function StudentArticleDetails() {
         } else {
             return text;
         }
+    }
+    function formatDateOnly(dateStr) {
+        return new Date(dateStr).toLocaleDateString();
     }
     const handleAddComment = async () => {
         if (!newComment.trim() || !newStatus) {
@@ -161,11 +164,10 @@ function StudentArticleDetails() {
                 <h1 className='bg-gray-200 p-2'>Title: {article.title}</h1>
                 <h2 className='mt-3'>Status: {article.status}</h2>
                 <h2 className='mt-3'>Faculty: {article.facultyName}</h2>
-                <h3 className='mt-3'>Closure date: 12/27/2023</h3> {/* Update this dynamically if possible */}
                 <p className='mt-3'>Description: {article.description}</p>
                 <h1 className=' mt-5 font-semibold '>Submissions list</h1>
                 <div className=' mt-3 grid grid-cols-1 text-xl gap-2'>
-                    <h1 className=' bg-gray-300 p-2 text-3xl flex items-center gap-2 justify-between'> <div className='flex items-center'><button className='text-5xl' onClick={(e) => setShow(!show)}>{show ? <IoMdArrowDropdown className='' /> : <IoMdArrowDropright className='' />}</button> Files and Comment</div> <p className='text-xl text-red-500'>
+                    <h1 className=' bg-gray-300 p-2 text-3xl flex items-center gap-2 justify-between'> <div className='flex items-center'>Files and Comment</div> <p className='text-xl text-red-500'>
                         {comments.length > 0 ? `${comments.length} comments` : "*Currently no comments"}</p>  </h1>
                     <table className='w-full  [&>tbody>*:nth-child(odd)]:bg-gray-200 [&>tbody>*:nth-child()]:p-2  '>
                         <tbody className=' p-2'>
@@ -182,7 +184,7 @@ function StudentArticleDetails() {
                                     Upload date
                                 </td>
                                 <td>
-                                    12/26/2023
+                                {formatDateOnly(article.submissionDate)}
                                 </td>
                             </tr>
                             <tr>
@@ -191,28 +193,12 @@ function StudentArticleDetails() {
                                 </td>
                                 <td className='flex items-center gap-2'>
                                     <a href={`https://localhost:7002/api/Contributions/DownloadFile?title=${encodeURIComponent(article.title)}`} target="_blank" rel="noopener noreferrer" className='flex items-center gap-2'>
-                                        <FaFilePdf className='text-red-500' />
+                                        <FaFileWord className='text-blue-500' />
                                         {article.fileName}
                                     </a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td style={{ verticalAlign: 'top' }}>
-                                    Comments
-                                    <button onClick={() => setShowAddCommentModal(true)} className="ml-2">
-                                        <IoIosAdd className="inline" />
-                                    </button>
-                                </td>
-                                <td>
-                                    <div className="overflow-auto max-h-48 border border-gray-300 rounded-lg">
-                                        {comments.length > 0 ? comments.map(comment => (
-                                            <CommentItem key={comment.id} comment={comment} />
-                                        )) : "Currently no comment."}
-                                    </div>
 
-                                    {selectedComment && <CommentModal comment={selectedComment} onClose={() => setSelectedComment(null)} />}
-                                </td>
-                            </tr>
 
 
                         </tbody>

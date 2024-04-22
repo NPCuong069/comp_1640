@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoMdArrowDropright } from "react-icons/io";
 import { IoIosAdd, IoIosRemove } from "react-icons/io";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFilePdf, FaFileWord } from "react-icons/fa";
 import "./articleDetails.css";
 import { formatDistanceToNow, parseISO, differenceInDays } from 'date-fns';
 import ArticleDropdown from './ArticleDropdown';
@@ -51,11 +51,10 @@ function StudentArticleDetails() {
         );
     };
     const handleUpdateStatus = async (newStatus) => {
-        // Perform API call to update status here
         try {
             const formDataForStatus = new FormData();
-            formDataForStatus.append('contributionId', article.contributionId);
-            const response = await axios.post(`https://localhost:7002/api/Contributions/change-contribution-status?status=${newStatus}`, formDataForStatus, {
+            formDataForStatus.append('contributionId', '19');
+            const response = await axios.post(`https://localhost:7002/api/Contributions/change-contribution-status?status=Refer`, formDataForStatus, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -282,7 +281,7 @@ function StudentArticleDetails() {
                                 </td>
                                 <td className='flex items-center gap-2'>
                                     <a href={`https://localhost:7002/api/Contributions/DownloadFile?title=${encodeURIComponent(article.title)}`} target="_blank" rel="noopener noreferrer" className='flex items-center gap-2'>
-                                        <FaFilePdf className='text-red-500' />
+                                    <FaFileWord className='text-blue-500' />
                                         {article.fileName}
                                     </a>
                                 </td>
@@ -342,7 +341,7 @@ function StudentArticleDetails() {
                 {showChangeStatusModal && (
                     <ChangeStatusModal
                         currentStatus={article.status}
-                        onUpdateStatus={handleUpdateStatus}
+                        onUpdateStatus={()=>handleUpdateStatus(newStatus)}
                         onClose={() => setShowChangeStatusModal(false)}
                     />
                 )}

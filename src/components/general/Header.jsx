@@ -19,6 +19,9 @@ function Header() {
     } else if (userRole === 'Student') {
       navigate('/student/profile');
     }
+    else if (userRole === 'Marketing Manager') {
+      navigate('/manager/profile');
+    }
   };
 
   return (
@@ -38,8 +41,11 @@ function Header() {
               {userRole === 'Student' && (
                 <Link to="/student/index" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Articles list</Link>
               )}
-                {userRole === 'Marketing Coordinator' && (
+              {userRole === 'Marketing Coordinator' && (
                 <Link to="/coordinator/index" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Articles list</Link>
+              )}
+              {userRole === 'Marketing Manager' && (
+                <Link to="/manager/index" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Articles list</Link>
               )}
               {userRole === 'Student' && (
                 <Link to="/student/addnew" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">New articles</Link>
@@ -49,6 +55,9 @@ function Header() {
               )}
               {userRole === 'Marketing Coordinator' && (
                 <Link to="/coordinator/overview" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Overview</Link>
+              )}
+              {userRole === 'Marketing Manager' && (
+                <Link to="/manager/overview" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Overview</Link>
               )}
               <button onClick={handleProfileNavigation} className="mt-4 text-gray-600 hover:text-gray-800">
                 <FiUser className="h-6 w-6 inline" /> Profile
@@ -66,14 +75,20 @@ function Header() {
             {userRole === 'Student' && (
               <Link to="/student/addnew" className="text-base font-medium text-gray-500 hover:text-gray-900">New articles</Link>
             )}
-                {userRole === 'Marketing Coordinator' && (
-                <Link to="/coordinator/index" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Articles list</Link>
-              )}
+            {userRole === 'Marketing Coordinator' && (
+              <Link to="/coordinator/index" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Articles list</Link>
+            )}
+            {userRole === 'Marketing Manager' && (
+              <Link to="/manager/index" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Articles list</Link>
+            )}
             {userRole === 'Student' && (
               <Link to="/student/overview" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Overview</Link>
             )}
             {userRole === 'Marketing Coordinator' && (
               <Link to="/coordinator/overview" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Overview</Link>
+            )}
+            {userRole === 'Marketing Manager' && (
+              <Link to="/manager/overview" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Overview</Link>
             )}
           </nav>
           <div className="hidden md:flex items-center space-x-4">

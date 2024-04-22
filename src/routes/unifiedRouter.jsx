@@ -196,6 +196,7 @@ function UnifiedRouter() {
         { path: '/manager/index', element: <ManagerIndex /> },
         { path: '/manager/articleDetails/:title', element: <ManagerArticleDetails /> },
         { path: '/manager/overview', element: <MarketingManagerOverview /> },
+        { path: '/manager/profile', element: <ProfileSettings /> },
       ],
     },
   ];

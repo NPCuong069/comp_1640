@@ -82,16 +82,7 @@ export default function UserTableRow({
         <TableCell >
               {finalClosure}
         </TableCell>
-        <TableCell>
-          <Button
-            color="warning"
-            variant="contained"
-            size="small"
-            onClick={() => handleDeleteFaculty(facultyName)}
-          >
-            Delete
-          </Button>
-        </TableCell>
+   
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />

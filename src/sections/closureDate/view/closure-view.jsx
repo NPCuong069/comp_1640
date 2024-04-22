@@ -129,8 +129,6 @@ export default function Faculty() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include authorization header if your API requires authentication
-          // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           academicYear: academicYear,
@@ -222,7 +220,6 @@ export default function Faculty() {
                   { id: 'startDate', label: 'Entries date' },
                   { id: 'endDate', label: 'Closure date' },
                   { id: 'finalDate', label: 'Final Closure date' },
-                  { id: 'action', label: 'Action' },
                   { id: '' },
                 ]}
               />

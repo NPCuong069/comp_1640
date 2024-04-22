@@ -349,7 +349,6 @@ export default function UserPage() {
                 <MenuItem value="Student">Student</MenuItem>
                 <MenuItem value="Marketing Coordinator">Marketing Coordinator</MenuItem>
                 <MenuItem value="Marketing Manager">Marketing Manager</MenuItem>
-                <MenuItem value="Guest">Guest</MenuItem>
               </Select>
             </FormControl>
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>

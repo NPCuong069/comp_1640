@@ -95,8 +95,8 @@ function StudentArticleDetails() {
             // Reload the article details to reflect the updates
             navigate(`/student/overview/${encodeURIComponent(newTitle)}`);
         } catch (error) {
-            console.error('Failed to update the article:', error.response);
-            alert('Failed to update the article');
+            console.error('Failed to update the article, please fill up all the fields:', error.response);
+            alert('Failed to update the article, please fill up all the fields');
         }
     };
     const EditModal = () => {
@@ -160,6 +160,8 @@ function StudentArticleDetails() {
                 const articleData = response.data;
                 setArticle(articleData);
                 fetchComments(articleData.contributionId);
+                setEditTitle(article.title);
+                setEditDescription(article.description);
                 // Now, fetch the academic term details
                 if (articleData.academicTermId) {
                     await fetchAcademicTermDetails(articleData.academicTermId);
