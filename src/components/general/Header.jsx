@@ -59,13 +59,16 @@ function Header() {
               {userRole === 'Marketing Manager' && (
                 <Link to="/manager/overview" className="block text-base font-medium text-gray-500 hover:text-gray-900 mb-2">Overview</Link>
               )}
+              {userRole!= 'Guest' && (
               <button onClick={handleProfileNavigation} className="mt-4 text-gray-600 hover:text-gray-800">
                 <FiUser className="h-6 w-6 inline" /> Profile
               </button>
+                )}
               <div></div>
               <button onClick={handleLogout} className="mt-4 text-gray-600 hover:text-gray-800">
                 <FiLogOut className="h-6 w-6 inline" /> Logout
               </button>
+            
             </div>
           </div>
           <nav className="hidden md:flex space-x-10">
@@ -92,9 +95,11 @@ function Header() {
             )}
           </nav>
           <div className="hidden md:flex items-center space-x-4">
+          {userRole!= 'Guest' && (
             <button onClick={handleProfileNavigation} className="text-gray-600 hover:text-gray-800">
               <FiUser className="h-6 w-6" />
             </button>
+          )}
             <button onClick={handleLogout} className="text-gray-600 hover:text-gray-800">
               <FiLogOut className="h-6 w-6" />
             </button>

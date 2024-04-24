@@ -42,6 +42,17 @@ function StudentArticleDetails() {
         return new Date(dateStr).toLocaleDateString();
     }
     const handleAddComment = async () => {
+        if (!newCommentName.trim() || !newComment.trim()) {
+            // Check if either the comment name or the content is empty
+            let errorMessage = "Please fill out all fields.";
+            if (!newCommentName.trim()) {
+                errorMessage = "Comment name cannot be empty.";
+            } else if (!newComment.trim()) {
+                errorMessage = "Comment content cannot be empty.";
+            }
+            alert(errorMessage);
+            return;
+        }
         const formDataForComment = new FormData();
         formDataForComment.append('CommentName', newCommentName); // You might want to dynamically set or omit this field
         formDataForComment.append('ContributionName', title);
@@ -59,7 +70,7 @@ function StudentArticleDetails() {
             setNewComment('');
             window.location.reload();
         } catch (error) {
-            console.error('Failed to add comment or update status', error);
+            console.error('Failed to add comment', error);
             alert('Failed to add comment or update status');
         }
     };
@@ -77,12 +88,30 @@ function StudentArticleDetails() {
         setShowImageModal(!showImageModal);
     };
     const handleEditArticle = async () => {
+        // Check if any field is empty
+        if (!editTitle.trim() || !editDescription.trim() || !editImageFile || !editDocumentFile) {
+            let errorMessage = "Please fill out all fields.";
+            if (!editTitle.trim()) {
+                errorMessage = "Title cannot be empty.";
+            } else if (editTitle.length > 255) {
+                errorMessage = "Title cannot be more than 255 characters.";
+            } else if (!editDescription.trim()) {
+                errorMessage = "Description cannot be empty.";
+            } else if (!editImageFile) {
+                errorMessage = "Image file cannot be empty.";
+            } else if (!editDocumentFile) {
+                errorMessage = "Document file cannot be empty.";
+            }
+            alert(errorMessage);
+            return; // Stop the form submission
+        }
+
         const formDataForEdit = new FormData();
         formDataForEdit.append('ContributionId', article.contributionId);
         formDataForEdit.append('Title', editTitle);
         formDataForEdit.append('Description', editDescription);
-        if (editImageFile) formDataForEdit.append('ImageFile', editImageFile);
-        if (editDocumentFile) formDataForEdit.append('DocumentFile', editDocumentFile);
+        formDataForEdit.append('ImageFile', editImageFile);
+        formDataForEdit.append('DocumentFile', editDocumentFile);
 
         try {
             await axios.put('https://localhost:7002/api/Contributions/update', formDataForEdit, {
@@ -93,10 +122,10 @@ function StudentArticleDetails() {
             alert('Article updated successfully');
             setShowEditModal(false);
             // Reload the article details to reflect the updates
-            navigate(`/student/overview/${encodeURIComponent(newTitle)}`);
+            navigate(`/student/overview/${encodeURIComponent(editTitle)}`);
         } catch (error) {
-            console.error('Failed to update the article, please fill up all the fields:', error.response);
-            alert('Failed to update the article, please fill up all the fields');
+            console.error('Failed to update the article:', error.response ? error.response.data : error);
+            alert('Failed to update the article: ' + (error.response ? error.response.data : 'An error occurred'));
         }
     };
     const EditModal = () => {
@@ -110,22 +139,26 @@ function StudentArticleDetails() {
                         value={editTitle}
                         onChange={(e) => setEditTitle(e.target.value)}
                         className="w-full p-2 border rounded mb-2"
+                        required
                     />
                     <textarea
                         placeholder="Edit description"
                         value={editDescription}
                         onChange={(e) => setEditDescription(e.target.value)}
                         className="w-full p-2 border rounded mb-2"
+                        required
                     />
                     <input
                         type="file"
                         onChange={handleImageFileChange}
                         className="w-full p-2 border rounded mb-2"
+                        required
                     />
                     <input
                         type="file"
                         onChange={handleDocumentFileChange}
                         className="w-full p-2 border rounded mb-2"
+                        required
                     />
                     <div className="flex justify-between space-x-2">
                         <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => setShowEditModal(false)}>Cancel</button>
@@ -160,8 +193,8 @@ function StudentArticleDetails() {
                 const articleData = response.data;
                 setArticle(articleData);
                 fetchComments(articleData.contributionId);
-                setEditTitle(article.title);
-                setEditDescription(article.description);
+                setEditTitle(articleData.title);
+                setEditDescription(articleData.description);
                 // Now, fetch the academic term details
                 if (articleData.academicTermId) {
                     await fetchAcademicTermDetails(articleData.academicTermId);
@@ -251,7 +284,7 @@ function StudentArticleDetails() {
                                     Status
                                 </td>
                                 <td>
-                                    {article.status}
+                                    {article.status === 'Selected' ? 'Published' : article.status}
                                 </td>
                             </tr>
                             <tr>
@@ -307,12 +340,14 @@ function StudentArticleDetails() {
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
                                 className="w-full p-2 border rounded mb-2"
+                                required
                             />
                             <textarea
                                 placeholder="Edit description"
                                 value={editDescription}
                                 onChange={(e) => setEditDescription(e.target.value)}
                                 className="w-full p-2 border rounded mb-2"
+                                required
                             />
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image-file">
                                 Image File
@@ -322,6 +357,7 @@ function StudentArticleDetails() {
                                 onChange={handleImageFileChange}
                                 className="w-full p-2 border rounded mb-2"
                                 accept="image/*"
+                                required
                             />
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image-file">
                                 Document File
@@ -331,6 +367,7 @@ function StudentArticleDetails() {
                                 onChange={handleDocumentFileChange}
                                 className="w-full p-2 border rounded mb-2"
                                 accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                required
                             />
                             <div className="flex justify-between space-x-2">
                                 <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={() => setShowEditModal(false)}>Cancel</button>

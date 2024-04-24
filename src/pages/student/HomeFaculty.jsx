@@ -29,7 +29,9 @@ function HomeFaculty() {
         })
             .then(response => response.json())
             .then(data => {
-                setArticles(data.reverse());
+                // Filter articles by status "Selected" right after fetching them
+                const selectedArticles = data.filter(article => article.status === 'Selected');
+                setArticles(selectedArticles.reverse());
             })
             .catch(error => console.error('Error fetching articles:', error));
     }, [faculty]);

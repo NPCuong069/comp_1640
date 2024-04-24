@@ -45,12 +45,17 @@ export function applyFilter({ inputData, comparator, filterName }) {
   });
 
   inputData = stabilizedThis.map((el) => el[0]);
-
+  console.log("Sorted Data:", inputData); 
   if (filterName) {
-    inputData = inputData.filter(
-      (user) => user.username.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((user) => {
+      const userName = user.userName ? user.userName.toLowerCase() : '';  // Make sure to use 'userName' as in your data structure
+      const facultyName = user.facultyName ? user.facultyName.toLowerCase() : ''; 
+      const roleName = user.roleName ? user.roleName.toLowerCase() : ''; 
+      const fullName = (user.firstName ? user.firstName.toLowerCase() : '') + ' ' + (user.lastName ? user.lastName.toLowerCase() : '');
+      const filterLower = filterName.toLowerCase();
+      return userName.includes(filterLower) || fullName.includes(filterLower) ||facultyName.includes(filterLower)||roleName.includes(filterLower);
+    });
   }
-
+  console.log("Filtered Data:", inputData); // Check data after filtering
   return inputData;
 }

@@ -25,6 +25,7 @@ function StudentArticleDetails() {
     const [finalClosureDate, setFinalClosureDate] = useState('');
     const username = localStorage.getItem('username');
     const [showChangeStatusModal, setShowChangeStatusModal] = useState(false);
+
     const ChangeStatusModal = ({ currentStatus, onUpdateStatus, onClose }) => {
         const [selectedStatus, setSelectedStatus] = useState(currentStatus);
         const handleUpdateStatus = () => {
@@ -40,11 +41,11 @@ function StudentArticleDetails() {
                         onChange={(e) => setSelectedStatus(e.target.value)}
                     >
                         <option value="Refer">Refer</option>
-                        <option value="Selected">Selected</option>
+                        <option value="Selected">Published</option>
                     </select>
                     <div className="flex justify-end space-x-2">
                         <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={onClose}>Cancel</button>
-                        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={handleUpdateStatus}>Update Status</button>
+                        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"  onClick={() => onUpdateStatus(selectedStatus)}>Update Status</button>
                     </div>
                 </div>
             </div>
@@ -53,8 +54,8 @@ function StudentArticleDetails() {
     const handleUpdateStatus = async (newStatus) => {
         try {
             const formDataForStatus = new FormData();
-            formDataForStatus.append('contributionId', '19');
-            const response = await axios.post(`https://localhost:7002/api/Contributions/change-contribution-status?status=Refer`, formDataForStatus, {
+            formDataForStatus.append('contributionId', article.contributionId);
+            const response = await axios.post(`https://localhost:7002/api/Contributions/change-contribution-status?status=${newStatus}`, formDataForStatus, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -107,7 +108,7 @@ function StudentArticleDetails() {
         formDataForComment.append('CommentName', newCommentName); // You might want to dynamically set or omit this field
         formDataForComment.append('ContributionName', title);
         formDataForComment.append('ContributionId', article.contributionId);
-        formDataForComment.append('UserName', '92176099_3'); // Replace this with the actual username
+        formDataForComment.append('UserName', username); // Replace this with the actual username
         formDataForComment.append('Content', newComment);
 
         try {
@@ -154,7 +155,7 @@ function StudentArticleDetails() {
                 >
                     <option value="">Select Status</option>
                     <option value="Refer">Refer</option>
-                    <option value="Selected">Selected</option>
+                    <option value="Selected">Published</option>
                 </select>
                 <div className="flex justify-end space-x-2">
                     <button className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onClick={onClose}>Cancel</button>
@@ -245,7 +246,7 @@ function StudentArticleDetails() {
         <GeneralLayout>
             <div className='text-lg' >
                 <h1 className='bg-gray-200 p-2'>Title: {article.title}</h1>
-                <h2 className='mt-3'>Status: {article.status}</h2>
+                <h2 className='mt-3'>Status: {article.status === 'Selected' ? 'Published' : article.status}</h2>
                 <h2 className='mt-3'>Faculty: {article.facultyName}</h2>
                 <h3 className='mt-3'>Closure date: {closureDate}</h3>
                 <h3 className='mt-3'>Final Closure date: {finalClosureDate}</h3>
@@ -261,7 +262,7 @@ function StudentArticleDetails() {
                                     Status
                                 </td>
                                 <td className='flex justify-between'>
-                                    {article.status}  
+                                {article.status === 'Selected' ? 'Published' : article.status}
                                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded focus:outline-none focus:shadow-outline" onClick={() => setShowChangeStatusModal(true)}>
                                         Change Status
                                     </button>
@@ -341,7 +342,7 @@ function StudentArticleDetails() {
                 {showChangeStatusModal && (
                     <ChangeStatusModal
                         currentStatus={article.status}
-                        onUpdateStatus={()=>handleUpdateStatus(newStatus)}
+                        onUpdateStatus={handleUpdateStatus} 
                         onClose={() => setShowChangeStatusModal(false)}
                     />
                 )}

@@ -60,15 +60,15 @@ export default function UserTableRow({
           },
           body: JSON.stringify(requestBody),
         });
-
+      
         if (response.ok) {
           alert('Faculty updated successfully.');
           setSelectedFaculty(newFacultyName);
           localStorage.setItem('selectedTab', facultyname!="No Faculty"?1:0); 
           window.location.reload();
         } else {
-          alert('Failed to update faculty. User is not a student.');
-          console.log(response.json());
+          const textData = await response.text();
+          alert(`Failed to update faculty: ${textData}`);
         }
       } catch (error) {
         console.error('Error updating faculty:', error);
@@ -152,7 +152,7 @@ export default function UserTableRow({
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+         
         </TableCell>
 
         <TableCell component="th" scope="row" padding="none" >
@@ -198,9 +198,7 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+      
         </TableCell>
       </TableRow>
 

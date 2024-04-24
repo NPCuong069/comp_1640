@@ -64,7 +64,7 @@ export default function UserTableRow({
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
+
         </TableCell>
         <TableCell component="th" scope="row" padding="none" >
           <Stack direction="row" alignItems="center" spacing={2}>
@@ -84,9 +84,7 @@ export default function UserTableRow({
         </TableCell>
    
         <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+      
         </TableCell>
       </TableRow>
 

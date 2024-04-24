@@ -104,9 +104,9 @@ const IndexPage = () => {
 
                         <select className="border-2 border-gray-300 bg-white h-10 rounded-lg text-sm focus:outline-none" onChange={(e) => setSelectedStatus(e.target.value)}>
                             <option>All Statuses</option>
-                            <option>Submitted</option>
+                            <option>Pending</option>
                             <option>Refer</option>
-                            <option>Selected</option>
+                            <option value="Selected">Published</option>
                         </select>
                     </div>
                 </div>
@@ -125,7 +125,7 @@ const IndexPage = () => {
                                 </div>
                                 <div className="text-right self-start">
                                     <p className="text-sm">Upload date: {article.submissionDate}</p>
-                                    <p className="text-sm">Status: {article.status}</p>
+                                    <p className="text-sm">Status: {article.status === 'Selected' ? 'Published' : article.status}</p>
                                     <p className="text-sm">Author: {article.firstName} {article.lastName}</p>
                                 </div>
                             </li>

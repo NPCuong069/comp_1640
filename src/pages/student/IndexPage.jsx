@@ -60,9 +60,9 @@ function App() {
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="">All Statuses<IoIosArrowDown className='' /></option>
-              <option value="Submitted">Submitted</option>
+              <option value="Pending">Pending</option>
               <option value="Refer">Refer</option>
-              <option value="Selected">Selected</option>
+              <option value="Selected">Published</option>
             </select>
           </div>
           <label className="flex items-center text-gray-700">
@@ -83,7 +83,7 @@ function App() {
               <p className="mb-2">{truncateText(article.description, 140)}</p>
               <div className="text-sm text-gray-600 flex justify-between">
                 <span>Upload date: {article.submissionDate}</span>
-                <span>Status: {article.status}</span>
+                <span>Status: {article.status === 'Selected' ? 'Published' : article.status}</span>
               </div>
             </div>
           </Link>

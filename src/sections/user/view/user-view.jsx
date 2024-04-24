@@ -203,6 +203,8 @@ export default function UserPage() {
     if (activeTab === 1) return user.facultyName !== null;
     return true;
   });
+
+  
   const headLabels = [
     { id: 'name', label: 'Username' },
     { id: 'fullName', label: 'Full name' },
@@ -245,7 +247,7 @@ export default function UserPage() {
               <TableBody>
                 {filteredUsers
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .reverse().map((row) => (
                     <UserTableRow
                       key={row.userName}
                       username={row.userName}

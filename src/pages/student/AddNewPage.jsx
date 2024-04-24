@@ -13,6 +13,7 @@ function AddNewArticle() {
     const [isLoading, setIsLoading] = useState(false);
     const [activeTerm, setActiveTerm] = useState(null);
     const username = localStorage.getItem('username');
+    const facultyName = localStorage.getItem('facultyName');
     const [daysLeft, setDaysLeft] = useState(0);
     const navigate = useNavigate();
     const Spinner = () => (
@@ -30,29 +31,24 @@ function AddNewArticle() {
             setIsLoading(false);
             return;
         }
-        if (selectedFile && selectedImageFile) {
-            formData.append('File', selectedFile);
-        } else {
-            alert('Please select a file to upload.');
+        if (!selectedFile || !selectedImageFile) {
+            alert('Please select both a document file and an image file to upload.');
             setIsLoading(false);
             return;
         }
-        if (!title || !description ) {
+        if (!title || !description) {
             alert('All fields are required.');
             setIsLoading(false);
             return;
         }
-        formData.append('UserName', username); // You should replace this with actual user name
-        formData.append('FacultyName', 'IT'); // You should replace this with actual faculty name
+        formData.append('UserName', username);
+        formData.append('FacultyName', facultyName);
         formData.append('Title', title);
         formData.append('Description', description);
-        formData.append('TermsAgreed', true);
+        formData.append('TermsAgreed', termsAgreed);
         formData.append('ImageFile', selectedImageFile);
-        formData.append('AcademicTermId', '1');
-        if (selectedFile) {
-            formData.append('DocumentFile', selectedFile);
-        }
-
+        formData.append('DocumentFile', selectedFile);
+    
         try {
             const response = await axios.post('https://localhost:7002/api/Contributions/upload', formData, {
                 headers: {
@@ -61,13 +57,26 @@ function AddNewArticle() {
             });
             console.log('Contribution uploaded successfully', response.data);
             alert('Contribution uploaded successfully');
-            setIsLoading(false);
             navigate(`/student/articleDetails/${title}`);
-            // Handle success response
+    
+            // Now send the email asynchronously
+            const emailFormData = new FormData();
+            emailFormData.append('contributionId', response.data.contributionId);
+    
+            axios.post('https://localhost:7002/api/Contributions/send-email', emailFormData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then((emailResponse) => {
+                console.log('Email sent successfully', emailResponse);
+            }).catch((emailError) => {
+                console.error('Error sending email:', emailError);
+            });
+    
+            setIsLoading(false);
         } catch (error) {
             console.error('Error uploading contribution:', error);
             setIsLoading(false);
-            // Handle error response
         }
     };
     useEffect(() => {
@@ -150,7 +159,7 @@ function AddNewArticle() {
                                         Closure date: {new Date(activeTerm.closureDate).toLocaleDateString()} ({daysLeft} days left)
                                     </label>
                                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="faculty">
-                                        Faculty: faculty of science and engineering
+                                        Faculty: {facultyName}
                                     </label>
                                 </div>
 

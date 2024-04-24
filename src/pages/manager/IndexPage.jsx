@@ -6,32 +6,37 @@ import axios from 'axios';
 
 const handleDownloadAllSelected = async () => {
     try {
-        const response = await axios.get('https://localhost:7002/api/Contributions/download-all-selected', {
-            responseType: 'blob', // Ensure that the backend sends a blob
-        });
-        // Check if the response is a blob and not a JSON (which would not have a type like 'application/json')
-        if (response.data.type && response.data.type !== 'application/json') {
-            const url = window.URL.createObjectURL(response.data);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'SelectedContributions.zip');
-            document.body.appendChild(link);
-            console.log("Attempting to download file");
-            console.log("Response status:", response.status);
-            console.log("Blob URL:", url);
-            link.click();
-            link.remove(); // Clean up the DOM
-            window.URL.revokeObjectURL(url); // Free up memory
+        const response = await fetch('https://localhost:7002/api/Contributions/download-all-selected');
+
+        if (!response.ok) {
+            // Handle HTTP errors
+            throw new Error('Network response was not ok.');
+        }
+
+        const contentDisposition = response.headers.get('Content-Disposition');
+        if (response.status === 200 && contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+            // Assume it's a file to download
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const filename = contentDisposition.split('filename=')[1] || 'download.zip';
+            a.setAttribute('download', filename.replace(/['"]/g, ''));
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
         } else {
-            // If the response is not a file, assume it's an error in JSON format
-            console.error('No file to download, received JSON instead.');
-            alert('No recently ended academic terms found.');
+            // If it's not an attachment or file, handle other responses
+            const errorData = await response.text();  // Assuming error data might be in plain text
+            alert(`Server responded with an error: ${errorData}`);
         }
     } catch (error) {
-        console.error('Failed to download all selected articles:', error);
-        alert('No recently ended academic terms found.');
+        console.error('Failed to download file:', error);
+        alert('Failed to download file.');
     }
 };
+
 
 function formatDateOnly(dateStr) {
     return new Date(dateStr).toLocaleDateString();
@@ -67,6 +72,10 @@ const IndexPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [articlesPerPage] = useState(5);
+    const downloadUrl = 'https://localhost:7002/api/Contributions/download-all-selected';
+    const [termEnded, setTermEnded] = useState(false);
+
+
     const fetchArticles = async () => {
         setIsLoading(true);
         try {
@@ -96,12 +105,26 @@ const IndexPage = () => {
     };
 
     useEffect(() => {
+
+        const fetchAcademicTerms = async () => {
+            const response = await axios.get('https://localhost:7002/api/AcademicTerms');
+            const terms = response.data;
+            const today = new Date();
+            // Check if any academic term has ended
+            const hasEndedTerm = terms.some(term => new Date(term.finalClosure) < today);
+            setTermEnded(hasEndedTerm);
+        };
+
+        fetchAcademicTerms();
         fetchArticles();
     }, [selectedStatus, searchQuery]);
+
     const handleArticleClick = (title) => {
         const formattedTitle = encodeURIComponent(title);
         navigate(`/manager/articleDetails/${formattedTitle}`);
     };
+
+
     const paginate = pageNumber => setCurrentPage(pageNumber);
     const indexOfLastArticle = currentPage * articlesPerPage;
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
@@ -131,9 +154,13 @@ const IndexPage = () => {
                         />
                     </div>
                     <div className="flex items-center space-x-2 ml-auto">
-                        <button className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDownloadAllSelected()}>
-                            Get All Selected Articles
-                        </button>
+                    {termEnded ? (
+                            <a href={downloadUrl} download="SelectedContributions.zip" className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                                Download All Published Articles
+                            </a>
+                        ) : (
+                            <span>Currently, there are no ended academic terms.</span>
+                        )}
                     </div>
                 </div>
                 <div className="bg-white ">

@@ -99,7 +99,7 @@ function HomePage() {
                 <div>
                   <div className='flex'></div>
                   <img src={weather.icon} alt="Weather Icon" style={{ width: 50, height: 50 }} />
-                  <p>Temperature: {weather.temp}°C</p>
+                  <p>Temperature: {(weather.temp - 273.15).toFixed(1)}°C</p>
                   <p>Weather: {weather.description}</p>
                 </div>
               )}

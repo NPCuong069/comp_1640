@@ -89,6 +89,7 @@ export default function Faculty() {
   };
 
   const handleFilterByName = (event) => {
+    console.log("Filtering with:", event.target.value); 
     setPage(0);
     setFilterName(event.target.value);
   };
@@ -193,11 +194,7 @@ export default function Faculty() {
       </Stack>
 
       <Card>
-        <UserTableToolbar
-          numSelected={selected.length}
-          filterName={filterName}
-          onFilterName={handleFilterByName}
-        />
+  
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>

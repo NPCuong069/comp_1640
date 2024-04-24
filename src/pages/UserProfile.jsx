@@ -210,6 +210,7 @@ function ProfileSettings() {
                                     onChange={handleInputChange}
                                     disabled={!isEditable}
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    required
                                 />
                             </div>
                             <div className="md:w-1/2 md:pl-2">
@@ -224,7 +225,8 @@ function ProfileSettings() {
                                     onChange={handleInputChange}
                                     disabled={!isEditable}
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                />
+                                    required
+                               />
                             </div>
                         </div>
                         <div className="md:flex md:items-center mb-6 mt-6">

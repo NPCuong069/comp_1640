@@ -19,75 +19,58 @@ const ReadingPage = () => {
     const [articles, setArticles] = useState([]);
     const containerRef = useRef(null);
     const [selectedStatus, setSelectedStatus] = useState('');
-    const {title} = useParams();
+    const { title } = useParams();
     useEffect(() => {
         const encodedTitle = encodeURIComponent(title);
-        const fetchArticles = async () => {
-            try {
-                const response = await axios.get(`https://localhost:7002/api/Contributions/faculty/IT`);
-            const fetchedArticles = response.data.filter(article =>
-                    article.status == 'Selected');
-                // Fetch image URLs for each article and update the article objects
-                const updatedArticles = await Promise.all(
-                    fetchedArticles.map(async (article) => {
-                        try {
-                            const imageResponse = await axios.get(`https://localhost:7002/api/Contributions/DownloadImageFile?title=${article.title}`, { responseType: 'blob' });
-                            const imageUrl = `https://localhost:7002/api/Contributions/DownloadImageFile?title=${encodeURIComponent(article.title)}`;
-                            console.log(imageUrl);
-                            return { ...article, imageUrl };
-                        } catch (error) {
-                            console.error('Error fetching image for article:', article.title, error);
-                            return { ...article, imageUrl: null }; // or a placeholder image URL
-                        }
-                    })
-                );
-                const filteredArticles = updatedArticles.filter(article => 
-                    encodeURIComponent(article.title) !== encodedTitle
-                );
-                setArticles(filteredArticles);
-            } catch (error) {
-                console.error('Error fetching articles:', error);
-            }
 
-        };
-        const fetchPdfFile = async () => {
+        const fetchArticleDetails = async () => {
             try {
-                const response = await axios.get(`https://localhost:7002/api/Contributions/DownloadFile?title=${encodedTitle}`, {
+                // Fetch the current article information
+                const articleResponse = await axios.get(`https://localhost:7002/api/Contributions/contribution/${encodedTitle}`);
+                setArticleInfo(articleResponse.data);
+
+                // Fetch the PDF file for the current article
+                const pdfResponse = await axios.get(`https://localhost:7002/api/Contributions/DownloadFile?title=${encodedTitle}`, {
                     responseType: 'blob',
                     headers: {
                         'Accept': 'application/pdf'
                     }
                 });
-                setPdfFile(URL.createObjectURL(response.data));
+                setPdfFile(URL.createObjectURL(pdfResponse.data));
 
-                const articleResponse = await axios.get(`https://localhost:7002/api/Contributions/contribution/${encodedTitle}`);
-                setArticleInfo(articleResponse.data);
+                // Fetch related articles using the faculty name from the current article
+                if (articleResponse.data && articleResponse.data.facultyName) {
+                    const facultyName = articleResponse.data.facultyName;
+                    const relatedArticlesResponse = await axios.get(`https://localhost:7002/api/Contributions/faculty/${facultyName}`);
+                    const fetchedArticles = relatedArticlesResponse.data.filter(article => article.status === 'Selected');
+
+                    const updatedArticles = await Promise.all(fetchedArticles.map(async (article) => {
+                        try {
+                            const imageUrl = `https://localhost:7002/api/Contributions/DownloadImageFile?title=${encodeURIComponent(article.title)}`;
+                            return { ...article, imageUrl };
+                        } catch (error) {
+                            console.error('Error fetching image for article:', article.title, error);
+                            return { ...article, imageUrl: null }; // or a placeholder image URL
+                        }
+                    }));
+
+                    const filteredArticles = updatedArticles.filter(article => encodeURIComponent(article.title) !== encodedTitle);
+                    setArticles(filteredArticles);
+                }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching article details and related content:', error);
             }
         };
-        const observeContainer = () => {
-            if (containerRef.current) {
-                const resizeObserver = new ResizeObserver(entries => {
-                    for (let entry of entries) {
-                        setContainerWidth(entry.contentRect.width);
-                    }
-                });
-                resizeObserver.observe(containerRef.current);
-                return () => resizeObserver.disconnect(); // Cleanup on unmount
-            }
-        };
-        fetchArticles();
-        observeContainer();
-        fetchPdfFile();
-    }, [title]);
+
+        fetchArticleDetails();
+    }, [title]); 
 
     function onDocumentLoadSuccess({ numPages }) {
         setNumPages(numPages);
     }
     const downloadFile = async () => {
         try {
-            const encodedTitle =encodeURIComponent(title); 
+            const encodedTitle = encodeURIComponent(title);
             // Replace 'Test article' with the actual title or identifier for the article
             const response = await fetch(`https://localhost:7002/api/Contributions/DownloadFile?title=${encodedTitle}`, {
                 responseType: 'blob',
@@ -111,7 +94,7 @@ const ReadingPage = () => {
             console.error('Error downloading the file:', error);
         }
     };
-    
+
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     return (
         <GeneralLayout>
@@ -159,14 +142,14 @@ const ReadingPage = () => {
                         <p className='font-bold'>Related article</p>
                     </div>
                     {articles.slice(1, 5).map((article) => (
-                         <div key={article.id} className="p-4 flex items-start space-x-4">
-                         <div className="flex-shrink-0" style={{ width: '80px', height: '80px' }}> {/* Ensure the image container does not shrink */}
-                             <img src={article.imageUrl } alt="Contribution" className="w-full h-full object-contain rounded-lg" />
-                         </div>
-                         <div className="flex-grow">
-                             <a href={`/articles/${article.id}`} className="block">{article.title}</a>
-                         </div>
-                     </div>
+                        <div key={article.id} className="p-4 flex items-start space-x-4">
+                            <div className="flex-shrink-0" style={{ width: '80px', height: '80px' }}> {/* Ensure the image container does not shrink */}
+                                <img src={article.imageUrl} alt="Contribution" className="w-full h-full object-contain rounded-lg" />
+                            </div>
+                            <div className="flex-grow">
+                                <a href={`/articles/${article.id}`} className="block">{article.title}</a>
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
